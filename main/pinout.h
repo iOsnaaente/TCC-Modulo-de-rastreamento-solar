@@ -24,8 +24,6 @@
 #define ADC5              GPIO_NUM_33
 #define ADC6              GPIO_NUM_25
 
-/* GPIO de controle do Relé de potência  */
-#define POWER_RELAY       GPIO_NUM_32
 
 /* Interface SPI - Leitor de cartão micro SD  */
 #define MOSI              GPIO_NUM_23 
@@ -36,11 +34,6 @@
 /* Interface I2C com soquete externo */
 #define SDA               GPIO_NUM_21
 #define SCL               GPIO_NUM_22
-
-/* GPIO para ponte H - L298N */
-#define IN1               GPIO_NUM_17
-#define IN2               GPIO_NUM_16
-#define ENB               GPIO_NUM_4
 
 /* ADC de leitura de corrente da ponte H  */
 #define I_SENSING         GPIO_NUM_33
