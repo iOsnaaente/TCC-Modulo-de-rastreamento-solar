@@ -1,0 +1,15 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "files.associations": {
+    "esp_flash.h": "c",
+    "esp_chip_info.h": "c",
+    "bdc_motor_control.h": "c",
+    "gpio.h": "c",
+    "pinout.h": "c",
+    "ledc.h": "c",
+    "stdbool.h": "c",
+    "stdint.h": "c"
+  },
+  "idf.portWin": "COM6",
+  "idf.flashType": "UART"
+}
