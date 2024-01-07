@@ -1,4 +1,4 @@
 idf_component_register(SRCS "nvs_storage.c"
                     INCLUDE_DIRS "."
-                    REQUIRE nvs 
+                    REQUIRES "nvs_flash"
                     )
