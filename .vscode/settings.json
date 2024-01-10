@@ -9,7 +9,16 @@
     "ledc.h": "c",
     "stdbool.h": "c",
     "stdint.h": "c",
-    "nvs.h": "c"
+    "nvs.h": "c",
+    "esp_system.h": "c",
+    "modbusip_esp8266.h": "c",
+    "modbustcp.h": "c",
+    "mdns.h": "c",
+    "modbus_params.h": "c",
+    "sd_card.h": "c",
+    "nvs_storage.h": "c",
+    "pid_control.h": "c",
+    "i2c_encoder.h": "c"
   },
   "idf.portWin": "COM6",
   "idf.flashType": "UART",

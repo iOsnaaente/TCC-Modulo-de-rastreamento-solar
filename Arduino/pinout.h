@@ -50,11 +50,7 @@
 #define GPIO_EXT2         GPIO_NUM_27
 #define GPIO_EXT3         GPIO_NUM_14
 
-
-#define UART_BAUDRATE     115200
-#define UART_MODE         SERIAL_8N1
 #define UART_TXD0         GPIO_NUM_1
 #define UART_RXD0         GPIO_NUM_3
-
 
 #endif

@@ -46,6 +46,31 @@ These components' dependencies are listed in the [manifest file](main/idf_compon
 |                   |             |                    |
 +-------------------+             +--------------------+
 
+### MODBUS NETWORK 
+
+Modbus multi slave segment connection schematic:
+
+    MB_DEVICE_ADDR1
+    -------------
+    |           |
+    |  Slave 1  |---<>--+
+    |           |       |
+    -------------       |
+    MB_DEVICE_ADDR2     |
+    -------------       |        -------------
+    |           |       |        |           |
+    |  Slave  2 |---<>--+---<>---|  Master   |
+    |           |       |        |           |
+    -------------       |        -------------
+    MB_DEVICE_ADDR3     |
+    -------------     Network (Ethernet or WiFi connection)
+    |           |       |
+    |  Slave 3  |---<>--+
+    |           |
+    -------------
+
+
+
 ### Steps 
 
 [1] Fazer a definição dos pinouts de motores e encoders

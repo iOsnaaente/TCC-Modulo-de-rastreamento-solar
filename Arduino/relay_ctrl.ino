@@ -1,3 +1,12 @@
+/*  
+ *  Description: Definições para controle de relé 5V (RAS-0510).
+ *  Author: Bruno G. F. Sampaio
+ *  Date: 04/01/2024
+ *  License: MIT
+ *  DATASHEET available in https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
+ *
+*/
+
 /* Inicializar as configurações do relé, configurando o pino GPIO associado ao relé */
 void init_relay_configurations(void) {
   gpio_config_t io_conf = {

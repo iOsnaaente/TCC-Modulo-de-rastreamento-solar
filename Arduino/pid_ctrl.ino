@@ -1,7 +1,3 @@
-// #include <sys/param.h>
-// #include <stdbool.h>
-// #include <stdlib.h>
-
 // typedef enum {
 //     PID_CAL_TYPE_INCREMENTAL, /*!< Incremental PID control */
 //     PID_CAL_TYPE_POSITIONAL,  /*!< Positional PID control */

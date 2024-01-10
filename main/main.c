@@ -11,6 +11,10 @@
 #include "bdc_motor_control.h"
 #include "relay_control.h"
 #include "pcnt_encoder.h"
+#include "i2c_encoder.h"
+#include "pid_control.h"
+#include "nvs_storage.h"
+#include "sd_card.h"
 
 
 void app_main(void){
