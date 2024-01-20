@@ -12,6 +12,15 @@
 #include <esp_event.h>
 #include <esp_netif.h>
 
+#include "lwip/err.h"
+#include "lwip/sys.h"
+#include "lwip/sockets.h"
+
+#include "esp_chip_info.h"
+#include "esp_mac.h"
+
+#include "lwip/sockets.h"
+
 #include <nvs_flash.h>
 
 #include "registradores.h"
@@ -20,13 +29,16 @@
 // const char *SSID_MASTER = "ESP32_TCC_MASTER_MODBUS";
 // const char *PASSWORD_MASTER = "1234567890";
 
+#ifndef DEBUG
+#define DEBUG
+#endif
+
 // Defina as credenciais da sua rede WiFi
-const char *SSID_MASTER = "BrunoFai";
+const char *SSID_MASTER = "ESP32_TCC_MASTER_MODBUS";
 const char *PSD_MASTER = "12051999";
 
-// Event Group para indicar a conexão bem-sucedida
-static EventGroupHandle_t wifi_event_group;
-const int CONNECTED_BIT = BIT0;
+const char *SERVER_IP = "192.168.12.1";
+const uint16_t SERVER_PORT = 502;
 
 volatile uint8_t wifi_retry_conn = 0;
 
@@ -37,18 +49,12 @@ static void event_handler(void *event_handler_arg, esp_event_base_t event_base, 
       esp_wifi_connect();
       printf("Wifi Start. \n");
       break;
-
     case SYSTEM_EVENT_STA_CONNECTED:
-      printf("Wifi connected! \n");
+      wifi_connection_state = true;
       wifi_retry_conn = 0;
       break;
-
-    case SYSTEM_EVENT_STA_GOT_IP:
-      xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
-      printf("Wifi connected! \n");
-      break;
-
     case SYSTEM_EVENT_STA_DISCONNECTED:
+      wifi_connection_state = false;
       if ((wifi_retry_conn++) != 10) {
         esp_wifi_connect();
         printf("Try reconnect %d times... \n", wifi_retry_conn);
@@ -57,21 +63,23 @@ static void event_handler(void *event_handler_arg, esp_event_base_t event_base, 
         esp_restart();
       }
       break;
-
     default:
       break;
   }
 }
 
 
-void init_modbus_config(void) {
+void init_wifi_config(void) {
   // Inicia o non-volatile storage para armazenamento das variáveis do wifi
   nvs_flash_init();
 
   // Inicia as configurações padrão para inicialização de uma rede TCP/IP
   esp_netif_init();
   esp_event_loop_create_default();
+
+  // Cria e configura a interface WiFi no modo AP_STA
   esp_netif_create_default_wifi_sta();
+  // esp_netif_create_default_wifi_ap();
 
   wifi_init_config_t wifi_initiation = WIFI_INIT_CONFIG_DEFAULT();
   esp_wifi_init(&wifi_initiation);
@@ -96,33 +104,31 @@ void init_modbus_config(void) {
   // Aguarde a conexão WiFi
   esp_wifi_connect();
 
-  // Inicia o escravo (server) Modbus
-  mb.server();
+  while (!wifi_connection_state) {
+  };
 
-  // Configure o escravo Modbus com o endereço 1 e porta TCP 502
+  printf("Wifi connected!!\n");
+  vTaskDelay( 500 / portTICK_PERIOD_MS);
+
+  // Inicia o servidor modbus 
+  mb.server();
   init_modbus_registers();
 }
 
 
-void modbus_att_analog_register(uint8_t addr, uint16_t *value) {
-
+void modbus_update_datetime(struct datetime_buffer_t dt) {
+  // Atualize os registradores Modbus com os valores da estrutura datetime_buffer_t
+  mb.Ireg(INPUT_YEAR, dt.year);
+  mb.Ireg(INPUT_MONTH, dt.month);
+  mb.Ireg(INPUT_DAY, dt.day);
+  mb.Ireg(INPUT_HOUR, dt.hour);
+  mb.Ireg(INPUT_MINUTE, dt.minute);
+  mb.Ireg(INPUT_SECOND, dt.second);
 }
-
-void modbus_att_holding_register(uint8_t addr, uint16_t *value) {
-
-}
-
-void modbus_att_coil_register(uint8_t addr, bool *value) {
-
-}
-
-void modbus_att_discrete_register(uint8_t addr, bool *value) {
-
-}
-
 
 void init_modbus_registers(void) {
   // MODBUS INPUTS REGISTER ADDRESSES
+  mb.addIreg(INPUT_SYSTEM_MODE, 0x00);
   mb.addIreg(INPUT_SENSOR_POS, 0x00);
   mb.addIreg(INPUT_SENSOR_STATUS, 0x00);
   mb.addIreg(INPUT_SUN_TARGET, 0x00);
@@ -153,13 +159,14 @@ void init_modbus_registers(void) {
   mb.addHreg(HR_SECOND, 0x00);
 
   // MODBUS DISCRETES REGISTER ADDRESSES
-  mb.addIsts(DISCRETE_ADC1_0, false );
-  mb.addIsts(DISCRETE_ADC1_3, false );
-  mb.addIsts(DISCRETE_ADC1_6, false );
-  mb.addIsts(DISCRETE_FAIL, false );
-  mb.addIsts(DISCRETE_SYNC, false );
+  mb.addIsts(DISCRETE_ADC1_0, false);
+  mb.addIsts(DISCRETE_ADC1_3, false);
+  mb.addIsts(DISCRETE_ADC1_6, false);
+  mb.addIsts(DISCRETE_FAIL, false);
+  mb.addIsts(DISCRETE_SYNC, false);
 
   // MODBUS COILS REGISTER ADDRESSES
   mb.addCoil(COIL_POWER, false);
   mb.addCoil(COIL_LED, false);
+  mb.addCoil(COIL_DT_SYNC, false);
 }

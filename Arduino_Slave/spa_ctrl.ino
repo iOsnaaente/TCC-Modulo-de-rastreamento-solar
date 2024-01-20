@@ -57,20 +57,20 @@ static inline void spa_att_position(void) {
   SolTrack(spa_time, spa_loc, &spa_pos, useDegrees, useNorthEqualsZero, computeRefrEquatorial, computeDistance);
 }
 
-void spa_att_location(double latitude, double longitude, double pressure, double temperature) {
+void spa_att_location(double latitude, double longitude) {
   spa_loc.latitude = latitude;
   spa_loc.longitude = longitude;
-  spa_loc.pressure = pressure;
-  spa_loc.temperature = temperature;
+  spa_loc.pressure = 101.1;
+  spa_loc.temperature = 300.0;
 }
 
-void spa_att_datetime(uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, double second) {
-  spa_time.year = year; 
-  spa_time.month = month; 
-  spa_time.day = day;
-  spa_time.hour = hour + 3;
-  spa_time.minute = minute;
-  spa_time.second = second;
+void spa_att_datetime(struct datetime_buffer_t datetime) {
+  spa_time.year = datetime.year;
+  spa_time.month = datetime.month;
+  spa_time.day = datetime.day;
+  spa_time.hour = datetime.hour + 3;
+  spa_time.minute = datetime.minute;
+  spa_time.second = datetime.second;
 }
 
 double spa_get_zenith(void) {
@@ -108,7 +108,7 @@ void SolTrack(struct STTime time, struct STLocation location, struct STPosition 
 }
 
 
-double computeJulianDay( uint8_t year, int month, uint8_t day, uint8_t hour, uint8_t minute, double second) {
+double computeJulianDay(uint8_t year, int month, uint8_t day, uint8_t hour, uint8_t minute, double second) {
   if (month <= 2) {
     year -= 1;
     month += 12;
@@ -156,7 +156,7 @@ void computeLongitude(int computeDistance, struct STPosition *position) {
 
 void convertEclipticToEquatorial(double longitude, double cosObliquity, double *rightAscension, double *declination) {
   double sinLon = sin(longitude);
-  double sinObl = sqrt(1.0 - cosObliquity * cosObliquity);  // Sine of the obliquity of the ecliptic will be positive in the forseeable future
+  double sinObl = sqrt(1.0 - cosObliquity * cosObliquity);           // Sine of the obliquity of the ecliptic will be positive in the forseeable future
   *rightAscension = STatan2(cosObliquity * sinLon, cos(longitude));  // 0 <= azimuth < 2pi
   *declination = asin(sinObl * sinLon);
 }

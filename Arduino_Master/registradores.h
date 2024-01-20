@@ -27,21 +27,23 @@
 
 
 // MODBUS INPUTS REGISTER ADDRESSES
-#define INPUT_SENSOR_POS     0x00
-#define INPUT_SENSOR_STATUS  0x01
+#define INPUT_SYSTEM_MODE    0x00
 
-#define INPUT_SUN_TARGET     0x02
+#define INPUT_SENSOR_POS     0x01
+#define INPUT_SENSOR_STATUS  0x02
 
-#define INPUT_POWER_GEN  	   0x03     
-#define INPUT_TEMPERATURE    0x04
-#define INPUT_PRESURE        0x05
+#define INPUT_SUN_TARGET     0x03
 
-#define INPUT_YEAR           0x06
-#define INPUT_MONTH          0x07
-#define INPUT_DAY            0x08
-#define INPUT_HOUR           0x09
-#define INPUT_MINUTE         0x0A
-#define INPUT_SECOND         0x0B
+#define INPUT_POWER_GEN  	   0x04   
+#define INPUT_TEMPERATURE    0x05
+#define INPUT_PRESURE        0x06
+
+#define INPUT_YEAR           0x07
+#define INPUT_MONTH          0x08
+#define INPUT_DAY            0x09
+#define INPUT_HOUR           0x0A
+#define INPUT_MINUTE         0x0B
+#define INPUT_SECOND         0x0C
 
 
 // MODBUS HOLDING REGISTER ADDRESSES
@@ -75,6 +77,7 @@
 // MODBUS COILS REGISTER ADDRESSES
 #define COIL_POWER           0x00   
 #define COIL_LED             0x01
+#define COIL_DT_SYNC         0x02
 
 
 
