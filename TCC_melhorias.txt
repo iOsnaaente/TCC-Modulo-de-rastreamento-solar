@@ -1,0 +1,19 @@
+-Projeto de Firmware
+  [Acrônimos] 
+    - SDK
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 	
+		
+
+  [Notas]
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 		
