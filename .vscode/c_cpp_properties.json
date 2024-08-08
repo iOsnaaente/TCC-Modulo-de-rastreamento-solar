@@ -8,12 +8,12 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "C:/Users/Bruno Sampaio/Desktop/Slave/include",
-                "C:/Users/Bruno Sampaio/Desktop/Slave/src",
+                "C:/Users/Bruno Sampaio/Desktop/TCC/include",
+                "C:/Users/Bruno Sampaio/Desktop/TCC/src",
                 "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/libraries/SD/src",
                 "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
                 "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/libraries/FS/src",
-                "C:/Users/Bruno Sampaio/Desktop/Slave/.pio/libdeps/esp32dev/modbus-esp8266/src",
+                "C:/Users/Bruno Sampaio/Desktop/TCC/.pio/libdeps/esp32dev/modbus-esp8266/src",
                 "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                 "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",
@@ -245,12 +245,12 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "C:/Users/Bruno Sampaio/Desktop/Slave/include",
-                    "C:/Users/Bruno Sampaio/Desktop/Slave/src",
+                    "C:/Users/Bruno Sampaio/Desktop/TCC/include",
+                    "C:/Users/Bruno Sampaio/Desktop/TCC/src",
                     "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/libraries/SD/src",
                     "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
                     "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/libraries/FS/src",
-                    "C:/Users/Bruno Sampaio/Desktop/Slave/.pio/libdeps/esp32dev/modbus-esp8266/src",
+                    "C:/Users/Bruno Sampaio/Desktop/TCC/.pio/libdeps/esp32dev/modbus-esp8266/src",
                     "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                     "C:/Users/Bruno Sampaio/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",

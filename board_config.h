@@ -27,8 +27,8 @@
  * @brief Configurações do Wi-Fi
  * @details Defina as credenciais da sua rede WiFi
  */
-#define SSID_MASTER  ((const char *)"BrunoSampaio")
-#define PSD_MASTER   ((const char *)"123456789123456789")
+#define SSID_MASTER  ((const char *)"TauraBots")
+#define PSD_MASTER   ((const char *)"robotica2024")
 #define SERVER_IP    ((const char *)"192.168.18.124")
 #define SERVER_PORT  502
 
@@ -53,25 +53,23 @@
  */ 
 #define LED_BOARD         ((gpio_num_t)GPIO_NUM_2)
 
-
-
 /* ADC com soquete externo - Sensores */
 #define ADC_EXT1          ((gpio_num_t)GPIO_NUM_36)
 #define ADC_EXT2          ((gpio_num_t)GPIO_NUM_39)
 #define ADC_EXT3          ((gpio_num_t)GPIO_NUM_34)
 
-#define ADC_EXT1_CHANNEL  ADC1_CHANNEL_0
-#define ADC_EXT2_CHANNEL  ADC1_CHANNEL_3
-#define ADC_EXT3_CHANNEL  ADC1_CHANNEL_6
+#define ADC_EXT1_CHANNEL  ((adc1_channel_t)ADC1_CHANNEL_0)
+#define ADC_EXT2_CHANNEL  ((adc1_channel_t)ADC1_CHANNEL_3)
+#define ADC_EXT3_CHANNEL  ((adc1_channel_t)ADC1_CHANNEL_6)
 
 /* ADCs internos  */
 #define ADC4              ((gpio_num_t)GPIO_NUM_35)
 #define ADC5              ((gpio_num_t)GPIO_NUM_33)
 #define ADC6              ((gpio_num_t)GPIO_NUM_25)
 
-#define ADC4_CHANNEL      ADC1_CHANNEL_7
-#define ADC5_CHANNEL      ADC1_CHANNEL_5
-#define ADC6_CHANNEL      ADC2_CHANNEL_8
+#define ADC4_CHANNEL      ((adc1_channel_t)ADC1_CHANNEL_7)
+#define ADC5_CHANNEL      ((adc1_channel_t)ADC1_CHANNEL_5)
+#define ADC6_CHANNEL      ((adc2_channel_t)ADC2_CHANNEL_8)
 
 /* GPIO de controle do Relé de potência  */
 #define POWER_RELAY       ((gpio_num_t)GPIO_NUM_32)

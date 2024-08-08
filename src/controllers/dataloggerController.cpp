@@ -32,7 +32,7 @@ std::string format_data_to_write( logger_data_t log, int16_t &len_data ) {
 DataloggerController::DataloggerController( const std::string description, logger_type_t logger_type = SDCARD_LOGGING )
   : log_type(logger_type) {
     if ( logger_type == SDCARD_LOGGING ){
-      logger = new SDCard( ); 
+      logger = new SDCard( "My SD Card", "/TrackerLogger" ); 
       if ( this->logger->is_mounted()){
         DEBUG_SERIAL("Datalogger", "SDCard mounted successfully");
       } else {

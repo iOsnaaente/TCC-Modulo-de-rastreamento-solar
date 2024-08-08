@@ -5,7 +5,8 @@ import time
 
 # Configurações do Modbus
 MODBUS_IP = '192.168.137.223'   # Endereço IP do dispositivo Modbus
-MODBUS_PORT = 502            # Porta Modbus TCP
+MODBUS_IP = '10.0.0.106'        # Endereço IP do dispositivo Modbus
+MODBUS_PORT = 502               # Porta Modbus TCP
 
 # Endereços Modbus aleatórios para data e hora
 HR_YEAR      = 0x0A
