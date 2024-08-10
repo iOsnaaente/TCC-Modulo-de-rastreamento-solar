@@ -77,7 +77,7 @@
 // }
 
 
-#include "../test/Atuador/AtuadorDegrau.h"
+#include "../test/Sensor/SensorIncremental.h"
 #include "modules/system/relay.h"
 
 Relay *relay;
