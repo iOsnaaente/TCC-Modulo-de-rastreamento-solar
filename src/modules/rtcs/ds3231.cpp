@@ -1,6 +1,6 @@
 #include "ds3231.h"
 
-DS3231::DS3231( const char* description, datetime_data_t datetime = {0} )
+DS3231::DS3231( const char* description, datetime_buffer_t datetime = {0} )
     : RTC(description)  {
     i2c_config_t conf;
     conf.mode = I2C_MODE_MASTER;
@@ -44,7 +44,7 @@ esp_err_t DS3231::read_bytes( uint8_t reg_addr, uint8_t *data, size_t length) {
 }
 
 
-esp_err_t DS3231::set_datetime( datetime_data_t datetime ) {
+esp_err_t DS3231::set_datetime( datetime_buffer_t datetime ) {
     uint8_t data[7] = {0};
     data[0] = 0x00;  
     data[1] = (( datetime.second / 10) << 4) | ( datetime.second % 10);
@@ -63,7 +63,7 @@ esp_err_t DS3231::set_datetime( datetime_data_t datetime ) {
            this->write_byte( DS3231_REG_TIME + 7, data[7]);
 }
 
-esp_err_t DS3231::get_datetime( datetime_data_t &datetime) {
+esp_err_t DS3231::get_datetime( datetime_buffer_t &datetime) {
     uint8_t data[7] = {0};
     esp_err_t ret = this->read_bytes( DS3231_REG_TIME, data, 7 );
     if (ret != ESP_OK) return ret;

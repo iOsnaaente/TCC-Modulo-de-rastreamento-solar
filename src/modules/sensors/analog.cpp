@@ -40,5 +40,5 @@ double AnalogSensor::read_scaled() {
 
 
 uint8_t AnalogSensor::get_status(){
-  return (uint8_t)1;
+  return (uint8_t)true;
 }

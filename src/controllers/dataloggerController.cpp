@@ -34,9 +34,7 @@ DataloggerController::DataloggerController( const std::string description, logge
     if ( logger_type == SDCARD_LOGGING ){
       logger = new SDCard( "My SD Card", "/TrackerLogger" ); 
       if ( this->logger->is_mounted()){
-        DEBUG_SERIAL("Datalogger", "SDCard mounted successfully");
       } else {
-        DEBUG_SERIAL("Datalogger", "SDCard mount failed");
         delete logger;
         logger = nullptr;
       }

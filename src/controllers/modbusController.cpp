@@ -4,6 +4,63 @@
 volatile bool wifi_connection_state = false;
 volatile uint8_t wifi_retry_conn = 0;
 
+ModbusController* ModbusController::Instance = nullptr;
+
+void ModbusController::modbusScanTask( void * pvParameters ){
+  const TickType_t xDelay = pdMS_TO_TICKS(50); 
+  TickType_t xLastWakeTime = xTaskGetTickCount(); 
+  while (true) {
+    vTaskDelayUntil(&xLastWakeTime, xDelay);
+      // Scaneia mudanças de registradores 
+    if (xSemaphoreTake(xModbusSemaphore, pdMS_TO_TICKS(25) ) == pdTRUE ) { 
+      this->scan();
+      xSemaphoreGive(xModbusSemaphore);
+    }
+  }
+}
+
+
+void ModbusController::modbusDatetimeTask( void * pvParameters ){
+  const TickType_t xDelay = pdMS_TO_TICKS(this->measurement_time); 
+  TickType_t xLastWakeTime = xTaskGetTickCount(); 
+  datetime_buffer_t datetime = {0}; 
+  while (true) {
+    vTaskDelayUntil(&xLastWakeTime, xDelay);
+    if (xSemaphoreTake(xModbusSemaphore, pdMS_TO_TICKS(10) ) == pdTRUE ) { 
+      this->scan();
+      // Verifica se é para atualizar o registrador de date e hora
+      if ( this->mb.Coil( COIL_DT_SYNC) ){
+        datetime.year = this->mb.Hreg( HR_YEAR );
+        datetime.month = this->mb.Hreg( HR_MONTH );
+        datetime.day = this->mb.Hreg( HR_DAY );
+        datetime.hour = this->mb.Hreg( HR_HOUR );
+        datetime.minute = this->mb.Hreg( HR_MINUTE );
+        datetime.second = this->mb.Hreg( HR_SECOND );
+        datetime.dt_sync = true;
+        this->update_datetime( datetime );
+        this->mb.Coil( COIL_DT_SYNC, false );
+      }
+      // Calcula a posição de referencia
+      this->rtc->get_datetime( datetime );
+      spa_att_location( LATITUDE, LONGITUDE );
+      spa_att_datetime( datetime );
+      spa_att_position();
+
+      #ifdef ZENITE_MODE
+        this->mb.Ireg( INPUT_SUN_TARGET, spa_get_zenith()  );
+      #endif
+      #ifdef AZIMUTE_MODE
+        this->mb.Ireg( INPUT_SUN_TARGET, spa_get_azimuth() );
+      #endif
+      // DEBUG_SERIAL( "SUN POS", this->mb.Ireg( INPUT_SUN_TARGET) );
+
+      xSemaphoreGive(xModbusSemaphore);
+    }
+  }
+}
+
+
+
 
 // Eventos WiFi
 static void event_handler(void *event_handler_arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
@@ -30,7 +87,7 @@ static void event_handler(void *event_handler_arg, esp_event_base_t event_base, 
   }
 }
 
-ModbusController::ModbusController( const char *description ) 
+ModbusController::ModbusController( const char *description, RTC_type_t RTC_TYPE ) 
   : description(description) {
   // Inicia o non-volatile storage para armazenamento das variáveis do wifi
   nvs_flash_init();
@@ -56,9 +113,32 @@ ModbusController::ModbusController( const char *description )
   esp_wifi_set_mode(WIFI_MODE_STA);
   // Aguarde a conexão WiFi
   esp_wifi_connect();
-  while (!wifi_connection_state) {
-  };
-  DEBUG_SERIAL("MODBUS SERVICE", "wifi STA connection started" );
+  while (!wifi_connection_state) {};
+  DEBUG_SERIAL("WI-FI SERVICE", "wifi STA connection started" );
+
+  datetime_buffer_t dt = {0};
+  if ( RTC_TYPE == RTC_DS3231 ){
+    this->rtc = new DS3231( "RTC DS3231", dt );
+  }else if ( RTC_TYPE == RTC_SOFT ){
+    this->rtc = new SoftRTC( "RTC Software", dt );
+  }
+  DEBUG_SERIAL( "RTC INIT", "RTC inicializated!" );
+
+  // Inicializa o semáforo
+  xModbusSemaphore = xSemaphoreCreateBinary();
+  xSemaphoreGive(xModbusSemaphore);
+
+  // Cria a sua instancia para uso das funções da classe 
+  Instance = this; 
+
+  // Inicializa os registradores modbus
+  this->begin_connection();
+
+  // Inicializa a task de medição dos pulsos 
+  xTaskCreate( [](void *arg){Instance->modbusDatetimeTask(nullptr);}, "modbusControllTask", 2048, NULL, 1, modbusDatetimeTaskHandler );
+  xTaskCreate( [](void *arg){Instance->modbusScanTask(nullptr);}, "modbusControllTask", 2048, NULL, 1, modbusScanTaskHandler );
+  DEBUG_SERIAL( "MODBUS TASK", "Modbus task inicilizated!" );
+
 }
 
 void ModbusController::scan( void ){
@@ -120,5 +200,13 @@ void ModbusController::update_datetime( struct datetime_buffer_t dt) {
   this->mb.Ireg(INPUT_HOUR, dt.hour);
   this->mb.Ireg(INPUT_MINUTE, dt.minute);
   this->mb.Ireg(INPUT_SECOND, dt.second);
+  datetime_buffer_t datetime = {0};
+  datetime.year = dt.year;
+  datetime.month = dt.month;
+  datetime.day = dt.day;
+  datetime.hour = dt.hour;
+  datetime.minute = dt.minute;
+  datetime.second = dt.second;
+  this->rtc->set_datetime( datetime );
 }
 

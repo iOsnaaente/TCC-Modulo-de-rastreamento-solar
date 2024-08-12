@@ -12,7 +12,7 @@ struct STLocation           spa_loc         = { 0 };
 struct STPosition           spa_pos         = { 0 };
 struct STTime               spa_time        = { 0 };
 
-static inline void spa_att_position(void) {
+void spa_att_position(void) {
   SolTrack(spa_time, spa_loc, &spa_pos, useDegrees, useNorthEqualsZero, computeRefrEquatorial, computeDistance);
 }
 

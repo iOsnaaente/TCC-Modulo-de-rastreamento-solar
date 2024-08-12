@@ -21,9 +21,13 @@
 
 #include "driver/i2c.h"
 
+enum RTC_type_t {
+  RTC_DS3231,
+  RTC_SOFT,
+};
 
 // Datetime do sistema
-struct datetime_data_t {
+struct datetime_buffer_t {
   uint16_t year;
   uint16_t month;
   uint16_t day;
@@ -36,11 +40,11 @@ struct datetime_data_t {
 class RTC {
 protected:
     const char* description;
-    datetime_data_t datetime;
+    datetime_buffer_t datetime;
 public:
     RTC( const char* description ) : description(description) {}
-    virtual esp_err_t  set_datetime( datetime_data_t datetime ) = 0;
-    virtual esp_err_t  get_datetime( datetime_data_t &datetime ) = 0;
+    virtual esp_err_t  set_datetime( datetime_buffer_t datetime ) = 0;
+    virtual esp_err_t  get_datetime( datetime_buffer_t &datetime ) = 0;
 };
 
 #endif

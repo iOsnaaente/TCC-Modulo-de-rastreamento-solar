@@ -11,6 +11,11 @@
 /* Importar a biblioteca externa */
 #include "ModbusIP_ESP8266.h"
 
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+#include "freertos/task.h"
+
 #include <esp_wifi.h>
 #include <esp_system.h>
 #include <esp_event.h>
@@ -21,9 +26,17 @@
 
 #include <nvs_flash.h>
 
-/* Módulos e configurações de placa */
+/* Configurações de placa */
 #include "../../../board_config.h"
+
+/* Módulos */ 
 #include "../../modules/spa/spa.h"
+#include "../../modules/rtcs/softRTC.h"
+#include "../../modules/rtcs/ds3231.h"
+
+/* Interfaces */ 
+#include "../../interfaces/RTC.h"
+
 
 #include "serialController.h"
 
@@ -156,13 +169,29 @@
 
 static void event_handler(void *event_handler_arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
 
+
 class ModbusController {
 private:
+  void modbusDatetimeTask( void * pvParameters );
+  void modbusScanTask( void * pvParameters );
+
 public:
   const char *description; 
-  ModbusIP mb;
+  
+  // Cria a instancia para usar as Tasks como método.
+  static ModbusController *Instance;
+  TaskHandle_t *modbusDatetimeTaskHandler;
+  TaskHandle_t *modbusScanTaskHandler;
+  SemaphoreHandle_t xModbusSemaphore;
 
-  ModbusController( const char *description );
+  // Objetos 
+  ModbusIP mb;
+  RTC *rtc;
+
+  // Periodo de atualização da rede modbus 
+  uint32_t measurement_time = 1000;
+
+  ModbusController( const char *description, RTC_type_t RTC_TYPE );
   void begin_connection( void ); 
   void update_datetime( struct datetime_buffer_t dt);
   void scan();

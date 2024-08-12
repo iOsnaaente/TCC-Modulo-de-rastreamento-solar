@@ -1,7 +1,7 @@
 #include "softRTC.h"
 
 // Define a data e hora
-esp_err_t SoftRTC::set_datetime( datetime_data_t datetime ) {
+esp_err_t SoftRTC::set_datetime( datetime_buffer_t datetime ) {
     // Validação básica dos parâmetros
     if (datetime.month < 1 || datetime.month > 12 || datetime.day < 1 || datetime.day > 31 || 
         datetime.hour > 23 || datetime.minute > 59 || datetime.second > 59) {
@@ -27,7 +27,7 @@ esp_err_t SoftRTC::set_datetime( datetime_data_t datetime ) {
 
 
 // Obtém a data e hora atual
-esp_err_t SoftRTC::get_datetime(datetime_data_t &datetime) {
+esp_err_t SoftRTC::get_datetime(datetime_buffer_t &datetime) {
     if (last_update_time == 0) {
         return ESP_ERR_INVALID_STATE;
     }

@@ -8,8 +8,11 @@
 #ifndef POSITIONCONTROLLER_H
 #define POSITIONCONTROLLER_H
 
-#include "esp_err.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+#include "freertos/task.h"
 
+#include "esp_err.h"
 
 /**  Interfaces */ 
 #include "../../interfaces/motor.h"
@@ -19,6 +22,7 @@
 /**  Módulos */
 #include "../../modules/sensors/analog.h" // Sensores 
 #include "../../modules/sensors/AS5600.h"
+#include "../../modules/sensors/incremental.h"
 #include "../../modules/motors/L298N.h"   // Motores 
 #include "../../modules/rtcs/softRTC.h"   // RTCs 
 #include "../../modules/rtcs/ds3231.h"
@@ -34,8 +38,15 @@
 
 class MotorController {
 private:
+public:
   const char *description;
   uint8_t status;
+
+
+  // Instancia da classe this
+  static MotorController *Instance;
+  TaskHandle_t *stepControllTask;
+  SemaphoreHandle_t xMotorControllerSemaphore;
 
   /* Atuador */
   MotorType_t motor_type;
@@ -52,20 +63,25 @@ private:
   /* velocidade de saída */
   double out_value  = 0;
 
+  // 
+  double prev_angle = 0;
+  double position = 0;
+
   /* Erros */
-  double error      = 0;
   double prev_error = 0;
   double int_error  = 0;
   double dif_error  = 0;
 
   /* Ganhos */
+  const uint8_t measurement_time = 25;
   uint64_t last_measurement = 0; 
-  double Kp = 0;
-  double Ki = 0;
-  double Kd = 0;
-  
+  double Kp = 10.0;
+  double Ki = 2.10;
+  double Kd = 0.10;
 
-public:
+  void step( void * pvParameters );
+  
+    double error      = 0;
     // Construtor
     MotorController(const char* description, SensorType_t sensor_type, MotorType_t motor_type  );
     // seta os valores de PID
@@ -78,8 +94,6 @@ public:
     esp_err_t stop();
     // Atualizar os sensores e saida do atuador
     esp_err_t update();
-    // Aplica um passo de calculo das variavesid e controle 
-    esp_err_t step();
 };
 
 #endif // POSITIONCONTROLLER_H

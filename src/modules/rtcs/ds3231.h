@@ -27,9 +27,9 @@ private:
     esp_err_t get_temperature( float *temperature);
 public:
     double temperature;
-    DS3231(const char* description, datetime_data_t datetime );    
-    esp_err_t  set_datetime( datetime_data_t datetime ) override ;
-    esp_err_t  get_datetime( datetime_data_t &datetime ) override ;
+    DS3231(const char* description, datetime_buffer_t datetime );    
+    esp_err_t  set_datetime( datetime_buffer_t datetime ) override ;
+    esp_err_t  get_datetime( datetime_buffer_t &datetime ) override ;
 };
 
 

@@ -27,8 +27,8 @@
  * @brief Configurações do Wi-Fi
  * @details Defina as credenciais da sua rede WiFi
  */
-#define SSID_MASTER  ((const char *)"TauraBots")
-#define PSD_MASTER   ((const char *)"robotica2024")
+#define SSID_MASTER  ((const char *)"Sampaio")
+#define PSD_MASTER   ((const char *)"Elefante321")
 #define SERVER_IP    ((const char *)"192.168.18.124")
 #define SERVER_PORT  502
 

@@ -72,7 +72,7 @@ ax21, ax11, ax22, ax12 = axs.flatten()
 
 # Plotar os dados de Atuador no segundo subplot
 # ax1.plot( relative_times, pulsesDEG, label='Posição', color='green', linestyle='-')
-ax11.plot( relative_times, pulsesSMO, label='Posição', color='green', linestyle='-')
+ax11.plot( relative_times, pulsesSMO, label='Pulsos', color='green', linestyle='-')
 ax11.set_title('Pulsos')
 ax11.set_ylabel('Pulsos')
 ax11.legend()
@@ -89,7 +89,7 @@ ax12.grid(True)
 
 
 # Plotar os dados de Atuador no segundo subplot
-ax21.plot( relative_times, pulsesDEG, label='Posição', color='green', linestyle='-')
+ax21.plot( relative_times, pulsesDEG, label='Pulsos', color='green', linestyle='-')
 # ax21.plot( relative_times, pulsesSMO, label='Posição', color='green', linestyle='-')
 ax21.set_title('Pulsos')
 ax21.set_ylabel('Pulsos')

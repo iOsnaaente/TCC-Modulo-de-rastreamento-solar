@@ -7,6 +7,8 @@
 #ifndef __SPA_H_
 #define __SPA_H_
 
+#include "../../interfaces/RTC.h"
+
 #include "stdio.h"
 #include "math.h"
 
@@ -28,18 +30,6 @@ const bool computeRefrEquatorial    = false;
 const bool useNorthEqualsZero       = true;
 const bool computeDistance          = false;
 const bool useDegrees               = true;
-
-
-// Datetime do sistema
-struct datetime_buffer_t {
-  uint16_t year;
-  uint16_t month;
-  uint16_t day;
-  uint16_t hour;
-  uint16_t minute;
-  uint16_t second;
-  bool dt_sync;
-};
 
 
 // Structs:
@@ -70,7 +60,7 @@ struct STLocation {
 };
 
 
-static inline void spa_att_position(void);
+void spa_att_position(void);
 void spa_att_location(double latitude, double longitude);
 void spa_att_datetime( struct datetime_buffer_t datetime);
 double spa_get_zenith(void);
