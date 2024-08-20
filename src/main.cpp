@@ -25,28 +25,31 @@ MotorController  *controller;
 ModbusController *modbus; 
 Relay *relay;
 
+
 void setup(){
     serial_begin();
     DEBUG_SERIAL("SERIAL", "SERIAL BEGAN" );
 
     /** Inicia o controle dos motores */
     controller = new MotorController( "MotorController", SENSOR_AS5600_I2C, MOTOR_DC ); 
-    controller->set_pid_gains( 5.1, 0, 0 );
+    controller->set_pid_gains( 5.25, 1.12, 1.78 );
 
     /** Inicia o Log de dados via SDCard */
     datalogger = new DataloggerController( "DataLogger via SDCard", SDCARD_LOGGING );
     
     /** Inicia a comunicação WiFi para controle Modbus */ 
     modbus = new ModbusController( "ModbusController", RTC_SOFT );
-    // modbus->begin_connection();
 
+    /** Inicializa o Relé de proteção */
     relay = new Relay( "Relay controller" );
     relay->turn_on();
 
+    /* Habilita o motor após ligar o relé */
     controller->start();
 
+
     /** Inicia as tasks */
-    xTaskCreate( &blinkTask, "BlinkTask", 1024, NULL, 5, NULL );
+    // xTaskCreate( &blinkTask, "BlinkTask", 1024, NULL, 5, NULL );
 }
 
 
@@ -72,3 +75,21 @@ void blinkTask(void *pvParameters) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
+
+
+// #include "../test/Controle/ControleDegrau.h"
+// #include "modules/system/relay.h"
+
+// Relay *rela; 
+
+// void setup(void) {
+//     serial_begin();
+//     rela = new Relay( "relay" );
+//     rela->turn_on();
+//     app_main();
+// }
+
+
+// void loop(void) {
+//     vTaskDelay(1000 / portTICK_PERIOD_MS);
+// }

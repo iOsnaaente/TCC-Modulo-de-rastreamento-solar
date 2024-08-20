@@ -50,14 +50,13 @@ def read_log_data(filename):
 timestamps, pos, vel, acc, setpoints, actuators = read_log_data( FILENAME )
 
 # Ajustar o comprimento das listas
-min_length  = min(len(timestamps), len(pos), len(vel), len(acc), len(setpoints), len(actuators) )
+min_length  = min(len(timestamps), len(pos), len(vel), len(acc), len(setpoints), len(actuators) )//7
 timestamps = timestamps[:min_length]
 pos = pos[: min_length]
 vel = vel[: min_length]
 acc = acc[: min_length]
 setpoints = setpoints[: min_length]
 actuators = actuators[: min_length]
-
 
 
 def smooth_data(data, window_size=10):
@@ -85,15 +84,20 @@ from scipy.signal import savgol_filter
 # # Aplicar o filtro de Savitzky-Golay
 # pos = savgol_filter(pos, window_length, polyorder)
 
-
+f_t = [] 
 vel[0] = pos[1]-pos[0]
+f_t.append( vel[0] )
 mean = 0
 for i in range(len(pos[:-1])):
     a = ((pos[i+1]-pos[i]))/(timestamps[i+1]-timestamps[i])
     mean = a*(0.1) + mean*(1-0.1)
     vel[i+1] = mean
+    if actuators[i] == 0:
+        f_t.append( 0 )
+    else:
+        f_t.append( 3.35*(1 - np.exp( -8.5*((timestamps[i]/1000)-2.5) )) ) 
 
-vel = smooth_data( vel )
+# vel = smooth_data( vel )
 # vel = savgol_filter(vel, window_length, polyorder)
 
 
@@ -112,6 +116,12 @@ setpoints = [ i/8192 for i in setpoints ]
 
 # Criar a figura e os eixos
 fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
+
+
+
+with open( os.path.dirname( __file__) + '\\data.csv', 'w' ) as file:
+    for i in range(len(timestamps)):
+        file.write(f'{timestamps[i]};{vel[i]};{f_t[i]}\n')
 
 # Plotar os dados de Setpoint e Sensor no primeiro subplot
 ax1.plot(relative_times, pos, label='Posição', color='blue', linestyle='-')
@@ -132,6 +142,7 @@ ax2.grid(True)
 # Plotar os dados de Setpoint e Sensor no primeiro subplot
 ax3.plot(relative_times, vel, label='Velocidade', color='blue', linestyle='-')
 ax3.plot(relative_times, acc, label='Aceleração', color='green', linestyle='-')
+ax3.plot(relative_times, f_t, label='Curva de velocidade', color='red', linestyle='--')
 # ax3.plot( range( len( timestamps)), timestamps, label='-', color='blue', linestyle='-')
 ax3.set_title('°/ms')
 ax3.set_ylabel('Ângulo (°)')

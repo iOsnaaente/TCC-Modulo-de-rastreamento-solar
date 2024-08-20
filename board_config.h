@@ -27,8 +27,10 @@
  * @brief Configurações do Wi-Fi
  * @details Defina as credenciais da sua rede WiFi
  */
-#define SSID_MASTER  ((const char *)"Sampaio")
-#define PSD_MASTER   ((const char *)"Elefante321")
+// #define SSID_MASTER  ((const char *)"Sampaio")
+// #define PSD_MASTER   ((const char *)"Elefante321")
+#define SSID_MASTER  ((const char *)"Apt101")
+#define PSD_MASTER   ((const char *)"rocadapacoca")
 #define SERVER_IP    ((const char *)"192.168.18.124")
 #define SERVER_PORT  502
 

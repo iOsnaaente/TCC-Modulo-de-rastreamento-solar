@@ -42,10 +42,11 @@ class Logger {
 public:
     const std::string description;
     const std::string default_path;
-    bool is_initialized;
+    bool is_initialized = false;
 
     // Inicializa o cartão SD
-    Logger( const std::string description, const std::string default_path ): description(description), default_path(default_path) {};
+    Logger( const std::string description, const std::string default_path )
+      : description(description), default_path(default_path) {};
     // Deinit  
     virtual ~Logger( ) = default;
     // Escreve dados em um arquivo no cartão SD

@@ -5,7 +5,8 @@ import time
 
 # Configurações do Modbus
 # MODBUS_IP = '192.168.137.223'   # Endereço IP do dispositivo Modbus
-MODBUS_IP = '192.168.18.20'        # Endereço IP do dispositivo Modbus
+# MODBUS_IP = '192.168.18.20'        # Endereço IP do dispositivo Modbus
+MODBUS_IP = '10.0.0.102'        # Endereço IP do dispositivo Modbus
 MODBUS_PORT = 502               # Porta Modbus TCP
 
 # Endereços Modbus aleatórios para data e hora
@@ -19,7 +20,8 @@ COIL_DT_SYNC = 0x02
 
 if __name__ == '__main__':
     client = ModbusTcpClient( MODBUS_IP, port = MODBUS_PORT )
-    now = datetime.datetime.now()
+    # now = datetime.datetime.now()
+    now = datetime.datetime(2024, 3, 21, 0, 0, 0)  # Ano, Mês, Dia, Hora, Minuto, Segundo
     while True:
         now += datetime.timedelta(seconds=600)
         try:
