@@ -47,7 +47,7 @@ esp_err_t DS3231::read_bytes( uint8_t reg_addr, uint8_t *data, size_t length) {
 esp_err_t DS3231::set_datetime( datetime_buffer_t datetime ) {
     uint8_t data[7] = {0};
     data[0] = 0x00;  
-    data[1] = (( datetime.second / 10) << 4) | ( datetime.second % 10);
+    data[1] = (( (int)(datetime.second) / 10) << 4) | ( (int)(datetime.second) % 10);
     data[2] = (( datetime.minute / 10) << 4) | ( datetime.minute % 10);
     data[3] = (( datetime.hour   / 10) << 4) | ( datetime.hour % 10);
     data[4] = (( datetime.day    / 10) << 4) | ( datetime.day % 10);

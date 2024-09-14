@@ -59,47 +59,51 @@
 // MODBUS INPUTS REGISTER ADDRESSES
 #define INPUT_SYSTEM_MODE    0x00
 
-#define INPUT_SENSOR_POS     0x01
-#define INPUT_SENSOR_STATUS  0x02
+#define INPUT_SENSOR_STATUS  0x01
+#define INPUT_SENSOR_POS     0x02
 
-#define INPUT_SUN_TARGET     0x03
+#define INPUT_SUN_TARGET     0x04
+#define INPUT_ZENITH         0x06
+#define INPUT_AZIMUTH        0x08
 
-#define INPUT_POWER_GEN  	   0x04   
-#define INPUT_TEMPERATURE    0x05
-#define INPUT_PRESURE        0x06
+#define INPUT_POWER_GEN  	   0x0A   
+#define INPUT_TEMPERATURE    0x0C
+#define INPUT_PRESURE        0x0E
 
-#define INPUT_YEAR           0x07
-#define INPUT_MONTH          0x08
-#define INPUT_DAY            0x09
-#define INPUT_HOUR           0x0A
-#define INPUT_MINUTE         0x0B
-#define INPUT_SECOND         0x0C
+#define INPUT_YEAR           0x10
+#define INPUT_MONTH          0x11
+#define INPUT_DAY            0x12
+#define INPUT_HOUR           0x13
+#define INPUT_MINUTE         0x14
+#define INPUT_SECOND         0x15
+
 
 
 // MODBUS HOLDING REGISTER ADDRESSES
 #define HR_STATE             0x00
 
 #define HR_MOTOR_PV          0x01
-#define HR_MOTOR_KP          0x02
-#define HR_MOTOR_KI          0x03
-#define HR_MOTOR_KD          0x04
+#define HR_MOTOR_KP          0x03
+#define HR_MOTOR_KI          0x05
+#define HR_MOTOR_KD          0x07
 
-#define HR_ALTITUDE          0x05
-#define HR_LATITUDE          0x06
-#define HR_LONGITUDE         0x08
+#define HR_ALTITUDE          0x09
+#define HR_LATITUDE          0x0B
+#define HR_LONGITUDE         0x0D
 
-#define HR_YEAR              0x0A
-#define HR_MONTH             0x0B
-#define HR_DAY               0x0C
-#define HR_HOUR              0x0D
-#define HR_MINUTE            0x0E
-#define HR_SECOND            0x0F
+#define HR_YEAR              0x0F
+#define HR_MONTH             0x10
+#define HR_DAY               0x11
+#define HR_HOUR              0x12
+#define HR_MINUTE            0x13
+#define HR_SECOND            0x14
 
 
 // MODBUS DISCRETES REGISTER ADDRESSES
 #define DISCRETE_ADC1_0      0x00
 #define DISCRETE_ADC1_3      0x01
 #define DISCRETE_ADC1_6      0x03
+
 #define DISCRETE_FAIL        0x04
 #define DISCRETE_SYNC        0x05
 
@@ -108,6 +112,9 @@
 #define COIL_POWER           0x00   
 #define COIL_LED             0x01
 #define COIL_DT_SYNC         0x02
+#define COIL_PUSH_BUTTON_1   0x03
+#define COIL_PUSH_BUTTON_2   0x04
+#define COIL_PUSH_BUTTON_3   0x05
 
 
 

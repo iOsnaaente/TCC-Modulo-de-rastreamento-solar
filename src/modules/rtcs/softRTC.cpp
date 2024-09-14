@@ -9,8 +9,8 @@ esp_err_t SoftRTC::set_datetime( datetime_buffer_t datetime ) {
     }
     // Calcula o tempo em segundos desde 1970-01-01
     struct tm timeinfo = {0};
-    timeinfo.tm_year = datetime.year - 1900;
-    timeinfo.tm_mon = datetime.month - 1;
+    timeinfo.tm_year = datetime.year;
+    timeinfo.tm_mon = datetime.month;
     timeinfo.tm_mday = datetime.day;
     timeinfo.tm_hour = datetime.hour;
     timeinfo.tm_min = datetime.minute;
@@ -20,25 +20,38 @@ esp_err_t SoftRTC::set_datetime( datetime_buffer_t datetime ) {
     if (raw_time == (time_t)-1) {
         return ESP_ERR_INVALID_ARG;
     }
+    // Configurar o tempo do RTC
+    struct timeval now = { .tv_sec = raw_time };
+    settimeofday(&now, NULL);
     // Armazenar o tempo em segundos
     last_update_time = static_cast<uint64_t>(raw_time);
     return ESP_OK;
 }
 
 
-// Obtém a data e hora atual
+// Obtém a data e hora atual a partir do RTC
 esp_err_t SoftRTC::get_datetime(datetime_buffer_t &datetime) {
-    if (last_update_time == 0) {
+    // Obtém o tempo atual do sistema (RTC)
+    time_t raw_time;
+    time(&raw_time);  // Obtém o tempo em segundos desde 1970-01-01
+
+    // Verifica se o tempo foi obtido corretamente
+    if (raw_time == (time_t)-1) {
         return ESP_ERR_INVALID_STATE;
     }
-    time_t raw_time = static_cast<time_t>(last_update_time);
-    struct tm *timeinfo = localtime(&raw_time);
-    datetime.year = timeinfo->tm_year + 1900;
-    datetime.month = timeinfo->tm_mon + 1;
-    datetime.day = timeinfo->tm_mday;
-    datetime.hour = timeinfo->tm_hour;
-    datetime.minute = timeinfo->tm_min;
-    datetime.second = timeinfo->tm_sec;
+
+    // Converte o tempo bruto para uma estrutura tm (local time)
+    struct tm timeinfo;
+    localtime_r(&raw_time, &timeinfo);
+
+    // Preenche a estrutura datetime_buffer_t com os valores obtidos
+    datetime.year = timeinfo.tm_year + 1900;
+    datetime.month = timeinfo.tm_mon + 1;
+    datetime.day = timeinfo.tm_mday;
+    datetime.hour = timeinfo.tm_hour;
+    datetime.minute = timeinfo.tm_min;
+    datetime.second = timeinfo.tm_sec;
+
     return ESP_OK;
 }
 

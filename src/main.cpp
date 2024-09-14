@@ -32,12 +32,14 @@ void setup(){
 
     /** Inicia o controle dos motores */
     controller = new MotorController( "MotorController", SENSOR_AS5600_I2C, MOTOR_DC ); 
-    controller->set_pid_gains( 5.25, 1.12, 1.78 );
+    controller->set_pid_gains( 10.25, 0.42, 4.78 );
 
     /** Inicia o Log de dados via SDCard */
-    datalogger = new DataloggerController( "DataLogger via SDCard", SDCARD_LOGGING );
-    
+    // datalogger = new DataloggerController( "DataLogger via SDCard", SDCARD_LOGGING );
+
     /** Inicia a comunicação WiFi para controle Modbus */ 
+    DEBUG_SERIAL( "WIFI SSID", SSID_MASTER );
+    DEBUG_SERIAL( "WIFI PSD", PSD_MASTER );
     modbus = new ModbusController( "ModbusController", RTC_SOFT );
 
     /** Inicializa o Relé de proteção */
@@ -47,20 +49,41 @@ void setup(){
     /* Habilita o motor após ligar o relé */
     controller->start();
 
-
     /** Inicia as tasks */
-    // xTaskCreate( &blinkTask, "BlinkTask", 1024, NULL, 5, NULL );
+    xTaskCreate( &blinkTask, "BlinkTask", 1024, NULL, 5, NULL );
 }
 
 
 /** Loop principal */
 void loop() {
-    // Atualizar os dados do controlador de posição
-    controller->set_target( modbus->mb.Ireg(INPUT_SUN_TARGET)*50 );
-    // Debug 
-    DEBUG_SERIAL( "SUN POSITION", modbus->mb.Ireg(INPUT_SUN_TARGET)*50 ); 
-    DEBUG_SERIAL( "POSITION", controller->position ); 
+    // Verifica se a data foi atualizada 
+    if ( modbus->mb.Ireg(INPUT_YEAR) == 0 ) {
+        // Desliga o motor
+        controller->stop();
+        // Debug 
+        DEBUG_SERIAL( "DATETIME", "Waiting datetime update" ); 
+    }else{
+        if ( ((int16_t) modbus->mb.Ireg(INPUT_ZENITH)) >= 0  ) { 
+            
+            // Ligar o motor
+            controller->start();
+            // Atualizar os dados do controlador de posição
+            controller->set_target( ((int16_t)(modbus->mb.Ireg(INPUT_SUN_TARGET))) );
+            
+            DEBUG_SERIAL( "SUN POSITION"  , ((int16_t)(modbus->mb.Ireg(INPUT_SUN_TARGET))) ); 
+            DEBUG_SERIAL( "MOTOR POSITION", controller->position ); 
 
+            DEBUG_SERIAL( "SUN ZENITH",  String((int16_t)(modbus->mb.Ireg(INPUT_ZENITH) ))); 
+            DEBUG_SERIAL( "SUN AZIMUTH", String((int16_t)(modbus->mb.Ireg(INPUT_AZIMUTH))) + "\n"); 
+
+        }else {
+            // Desliga o motor
+            controller->stop();
+            DEBUG_SERIAL( "MOON SUN", "Goal Pos. = " + String((int16_t)(modbus->mb.Ireg(INPUT_SUN_TARGET))/100 ));
+            DEBUG_SERIAL( "MOON SUN", "Zenith = "    + String((int16_t)(modbus->mb.Ireg(INPUT_ZENITH))/100     ));
+            DEBUG_SERIAL( "MOON SUN", "Azimuth = "   + String((int16_t)(modbus->mb.Ireg(INPUT_AZIMUTH))/100    )+ "\n");
+        }        
+    }
     vTaskDelay(1000 / portTICK_PERIOD_MS);
 }
 
@@ -75,21 +98,3 @@ void blinkTask(void *pvParameters) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
-
-
-// #include "../test/Controle/ControleDegrau.h"
-// #include "modules/system/relay.h"
-
-// Relay *rela; 
-
-// void setup(void) {
-//     serial_begin();
-//     rela = new Relay( "relay" );
-//     rela->turn_on();
-//     app_main();
-// }
-
-
-// void loop(void) {
-//     vTaskDelay(1000 / portTICK_PERIOD_MS);
-// }

@@ -33,11 +33,11 @@ void spa_att_datetime( struct datetime_buffer_t datetime) {
 }
 
 double spa_get_zenith(void) {
-  return spa_pos.azimuthRefract;
+  return spa_pos.altitudeRefract;
 }
 
 double spa_get_azimuth(void) {
-  return spa_pos.altitudeRefract;
+  return spa_pos.azimuthRefract; 
 }
 
 
@@ -52,7 +52,7 @@ void SolTrack(struct STTime time, struct STLocation location, struct STPosition 
   llocation.cosLat = sqrt(1.0 - llocation.sinLat * llocation.sinLat);  // Cosine of a latitude is always positive or zero
 
   position->julianDay = computeJulianDay(time.year, time.month, time.day, time.hour, time.minute, time.second);
-  position->UT = time.hour + (double)time.minute / 60.0 + (double)time.second / 3600.0;
+  position->UT = (double)time.hour + (double)time.minute / 60.0 + (double)time.second / 3600.0;
   position->tJD = position->julianDay;
   position->tJC = position->tJD / 36525.0;
   position->tJC2 = position->tJC * position->tJC;
@@ -122,7 +122,7 @@ void convertEclipticToEquatorial(double longitude, double cosObliquity, double *
 
 
 void convertEquatorialToHorizontal(struct STLocation location, struct STPosition *position) {
-  double gmst = 1.75336856 + fmod(0.017202791805 * position->tJD, TWO_PI) + 6.77e-6 * position->tJC2 + position->UT / R2H;
+  double gmst = 1.75336856 + fmod(0.017202791805 * position->tJD, TWO_PI) + 6.77e-6 * position->tJC2 + (double)(position->UT / R2H);
   position->agst = fmod(gmst + position->nutationLon * position->cosObliquity, TWO_PI);  // Correction for equation of the equinoxes -> apparent Greenwich sidereal time
   double sinAlt = 0.0;
 

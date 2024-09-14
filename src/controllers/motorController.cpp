@@ -19,7 +19,7 @@ void MotorController::step( void *pvParametes ) {
   
   while (true) {
     vTaskDelayUntil(&xLastWakeTime, xDelay);
-    if (xSemaphoreTake(xMotorControllerSemaphore, pdMS_TO_TICKS(10) ) == pdTRUE ) { 
+    if (xSemaphoreTake(xMotorControllerSemaphore, pdMS_TO_TICKS(100) ) == pdTRUE ) { 
       if ( this->status == CONTROLLER_ON ){
         
         // Leitura da posição do sensor

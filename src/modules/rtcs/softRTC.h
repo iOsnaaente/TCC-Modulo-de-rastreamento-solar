@@ -1,8 +1,20 @@
 #ifndef RTC_TIMER_H
 #define RTC_TIMER_H
 
+#include "../../controllers/includes/serialController.h"
+
 #include "../../interfaces/RTC.h"
-#include <ctime>
+
+#include "driver/rtc_io.h"
+
+#include "esp_system.h"
+#include "esp_sntp.h"
+#include "esp_log.h"
+
+#include "soc/rtc.h"
+
+#include "ctime"
+
 
 #define SECONDS_IN_A_DAY 86400 // 24*60*60 
 

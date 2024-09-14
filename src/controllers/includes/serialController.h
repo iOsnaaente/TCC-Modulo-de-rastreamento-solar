@@ -52,7 +52,7 @@ extern SemaphoreHandle_t serialDebuggerMutex;
 
 
 /* Velocidade de comunicação entre Debug e Serial data */
-#define UART_BAUDRATE 115200     // Baudrate utilizado pela Serial do USB 
+#define UART_BAUDRATE 1000000     // Baudrate utilizado pela Serial do USB 
 
 void serial_begin();
 String buffer2String(const uint8_t* buffer, size_t length);

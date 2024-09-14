@@ -13,8 +13,6 @@
     - PTH
     - CAD
     - PCB
-    - IP
-    - TCP
     - USB
     - STA (Station)
     - AP (Access Point)

@@ -27,7 +27,7 @@
 
 // Variáveis
 const bool computeRefrEquatorial    = false;
-const bool useNorthEqualsZero       = true;
+const bool useNorthEqualsZero       = false;
 const bool computeDistance          = false;
 const bool useDegrees               = true;
 

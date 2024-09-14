@@ -7,12 +7,12 @@ volatile uint8_t wifi_retry_conn = 0;
 ModbusController* ModbusController::Instance = nullptr;
 
 void ModbusController::modbusScanTask( void * pvParameters ){
-  const TickType_t xDelay = pdMS_TO_TICKS(50); 
   TickType_t xLastWakeTime = xTaskGetTickCount(); 
+  TickType_t xDelay = pdMS_TO_TICKS(50); 
   while (true) {
     vTaskDelayUntil(&xLastWakeTime, xDelay);
-      // Scaneia mudanças de registradores 
-    if (xSemaphoreTake(xModbusSemaphore, pdMS_TO_TICKS(25) ) == pdTRUE ) { 
+    // Scaneia mudanças de registradores 
+    if (xSemaphoreTake(xModbusSemaphore, 0 ) == pdTRUE ) { 
       this->scan();
       xSemaphoreGive(xModbusSemaphore);
     }
@@ -21,12 +21,12 @@ void ModbusController::modbusScanTask( void * pvParameters ){
 
 
 void ModbusController::modbusDatetimeTask( void * pvParameters ){
-  const TickType_t xDelay = pdMS_TO_TICKS(this->measurement_time); 
   TickType_t xLastWakeTime = xTaskGetTickCount(); 
+  TickType_t xDelay = pdMS_TO_TICKS(1000); 
   datetime_buffer_t datetime = {0}; 
   while (true) {
     vTaskDelayUntil(&xLastWakeTime, xDelay);
-    if (xSemaphoreTake(xModbusSemaphore, pdMS_TO_TICKS(10) ) == pdTRUE ) { 
+    if (xSemaphoreTake(xModbusSemaphore, 0 ) == pdTRUE ) { 
       this->scan();
       // Verifica se é para atualizar o registrador de date e hora
       if ( this->mb.Coil( COIL_DT_SYNC) ){
@@ -42,20 +42,40 @@ void ModbusController::modbusDatetimeTask( void * pvParameters ){
       }
       // Calcula a posição de referencia
       this->rtc->get_datetime( datetime );
-      spa_att_location( LATITUDE, LONGITUDE );
-      spa_att_datetime( datetime );
-      spa_att_position();
-
-      #ifdef ZENITE_MODE
-        this->mb.Ireg( INPUT_SUN_TARGET, spa_get_zenith()  );
-      #endif
-      #ifdef AZIMUTE_MODE
-        this->mb.Ireg( INPUT_SUN_TARGET, spa_get_azimuth() );
-      #endif
-      // DEBUG_SERIAL( "SUN POS", this->mb.Ireg( INPUT_SUN_TARGET) );
-
+      datetime.year = mb.Ireg( INPUT_YEAR );
+      datetime.month = mb.Ireg( INPUT_MONTH );
+      datetime.day = mb.Ireg( INPUT_DAY );
+      datetime.hour = mb.Ireg( INPUT_HOUR );
+      datetime.minute = mb.Ireg( INPUT_MINUTE );
+      datetime.second = mb.Ireg( INPUT_SECOND );
+      // DEBUG_SERIAL( "UPDATE DATETIME", String(datetime.year) + "/" + String(datetime.month) + "/"+ String(datetime.day) + " "+ String(datetime.hour) + ":"+ String(datetime.minute) + ":"+ String(datetime.second) );
       xSemaphoreGive(xModbusSemaphore);
     }
+
+    spa_att_location( LATITUDE, LONGITUDE );
+    spa_att_datetime( datetime );
+    spa_att_position();
+
+    int16_t zenith  = (int16_t)(spa_get_zenith()*100);
+    int16_t azimuth = (int16_t)(spa_get_azimuth()*100);
+
+    // DEBUG_SERIAL( "ZENITE",  (int16_t) zenith ); 
+    // DEBUG_SERIAL( "AZIMUTE", (int16_t) azimuth ); 
+
+    this->mb.Ireg( INPUT_ZENITH,  zenith  );
+    this->mb.Ireg( INPUT_AZIMUTH, azimuth );
+
+
+    #ifdef ZENITE_MODE
+      this->mb.Ireg( INPUT_SUN_TARGET, zenith  );
+    #endif
+
+
+    #ifdef AZIMUTE_MODE
+      this->mb.Ireg( INPUT_SUN_TARGET, azimuth );
+    #endif
+    // DEBUG_SERIAL( "SUN POS", this->mb.Ireg( INPUT_SUN_TARGET) );
+
   }
 }
 
@@ -149,51 +169,52 @@ void ModbusController::begin_connection( void ){
   // Inicia o servidor modbus 
   this->mb.server();
   // MODBUS INPUTS REGISTER ADDRESSES
-  this->mb.addIreg(INPUT_SYSTEM_MODE, 0x00);
-  this->mb.addIreg(INPUT_SENSOR_POS, 0x00);
-  this->mb.addIreg(INPUT_SENSOR_STATUS, 0x00);
-  this->mb.addIreg(INPUT_SUN_TARGET, 0x00);
-  this->mb.addIreg(INPUT_POWER_GEN, 0x00);
-  this->mb.addIreg(INPUT_TEMPERATURE, 0x00);
-  this->mb.addIreg(INPUT_PRESURE, 0x00);
-  this->mb.addIreg(INPUT_YEAR, 0x00);
-  this->mb.addIreg(INPUT_MONTH, 0x00);
-  this->mb.addIreg(INPUT_DAY, 0x00);
-  this->mb.addIreg(INPUT_HOUR, 0x00);
-  this->mb.addIreg(INPUT_MINUTE, 0x00);
-  this->mb.addIreg(INPUT_SECOND, 0x00);
+  this->mb.addIreg( INPUT_SYSTEM_MODE,     0x00, (uint16_t) 1 );
+  this->mb.addIreg( INPUT_SENSOR_STATUS,   0x00, (uint16_t) 1 );
+  this->mb.addIreg( INPUT_SENSOR_POS,      0x00, (uint16_t) 2 );
+  this->mb.addIreg( INPUT_SUN_TARGET,      0x00, (uint16_t) 2 );
+  this->mb.addIreg( INPUT_ZENITH,          0x00, (uint16_t) 2 );
+  this->mb.addIreg( INPUT_AZIMUTH,         0x00, (uint16_t) 2 );
+  this->mb.addIreg( INPUT_POWER_GEN,       0x00, (uint16_t) 2 );
+  this->mb.addIreg( INPUT_TEMPERATURE,     0x00, (uint16_t) 2 );
+  this->mb.addIreg( INPUT_PRESURE,         0x00, (uint16_t) 2 );
+  this->mb.addIreg( INPUT_YEAR,            0x00, (uint16_t) 1 );
+  this->mb.addIreg( INPUT_MONTH,           0x00, (uint16_t) 1 );
+  this->mb.addIreg( INPUT_DAY,             0x00, (uint16_t) 1 );
+  this->mb.addIreg( INPUT_HOUR,            0x00, (uint16_t) 1 );
+  this->mb.addIreg( INPUT_MINUTE,          0x00, (uint16_t) 1 );
+  this->mb.addIreg( INPUT_SECOND,          0x00, (uint16_t) 1 );
   // MODBUS HOLDING REGISTER ADDRESSES
-  this->mb.addHreg(HR_STATE, 0x00);
-  this->mb.addHreg(HR_MOTOR_PV, 0x00);
-  this->mb.addHreg(HR_MOTOR_KP, 0x00);
-  this->mb.addHreg(HR_MOTOR_KI, 0x00);
-  this->mb.addHreg(HR_MOTOR_KD, 0x00);
-  this->mb.addHreg(HR_ALTITUDE, 0x00);
-  this->mb.addHreg(HR_LATITUDE, 0x00);
-  this->mb.addHreg(HR_LONGITUDE, 0x00);
-  this->mb.addHreg(HR_YEAR, 0x00);
-  this->mb.addHreg(HR_MONTH, 0x00);
-  this->mb.addHreg(HR_DAY, 0x00);
-  this->mb.addHreg(HR_HOUR, 0x00);
-  this->mb.addHreg(HR_MINUTE, 0x00);
-  this->mb.addHreg(HR_SECOND, 0x00);
+  this->mb.addHreg( HR_STATE,              0x00, (uint16_t) 1 );
+  this->mb.addHreg( HR_MOTOR_PV,           0x00, (uint16_t) 2 );
+  this->mb.addHreg( HR_MOTOR_KP,           0x00, (uint16_t) 2 );
+  this->mb.addHreg( HR_MOTOR_KI,           0x00, (uint16_t) 2 );
+  this->mb.addHreg( HR_MOTOR_KD,           0x00, (uint16_t) 2 );
+  this->mb.addHreg( HR_ALTITUDE,           0x00, (uint16_t) 2 );
+  this->mb.addHreg( HR_LATITUDE,           0x00, (uint16_t) 2 );
+  this->mb.addHreg( HR_LONGITUDE,          0x00, (uint16_t) 1 );
+  this->mb.addHreg( HR_YEAR,               0x00, (uint16_t) 1 );
+  this->mb.addHreg( HR_MONTH,              0x00, (uint16_t) 1 );
+  this->mb.addHreg( HR_DAY,                0x00, (uint16_t) 1 );
+  this->mb.addHreg( HR_HOUR,               0x00, (uint16_t) 1 );
+  this->mb.addHreg( HR_MINUTE,             0x00, (uint16_t) 1 );
+  this->mb.addHreg( HR_SECOND,             0x00, (uint16_t) 1 );
   // MODBUS DISCRETES REGISTER ADDRESSES
-  this->mb.addIsts(DISCRETE_ADC1_0, false);
-  this->mb.addIsts(DISCRETE_ADC1_3, false);
-  this->mb.addIsts(DISCRETE_ADC1_6, false);
-  this->mb.addIsts(DISCRETE_FAIL, false);
-  this->mb.addIsts(DISCRETE_SYNC, false);
+  this->mb.addIsts( DISCRETE_ADC1_0,       false );
+  this->mb.addIsts( DISCRETE_ADC1_3,       false );
+  this->mb.addIsts( DISCRETE_ADC1_6,       false );
+  this->mb.addIsts( DISCRETE_FAIL,         false );
+  this->mb.addIsts( DISCRETE_SYNC,         false );
   // MODBUS COILS REGISTER ADDRESSES
-  this->mb.addCoil(COIL_POWER, false);
-  this->mb.addCoil(COIL_LED, false);
-  this->mb.addCoil(COIL_DT_SYNC, false);
+  this->mb.addCoil( COIL_POWER,            false );
+  this->mb.addCoil( COIL_LED,              false );
+  this->mb.addCoil( COIL_DT_SYNC,          false );
   DEBUG_SERIAL("MODBUS SERVICE", "Modbus registers updated!" );
-
 }
 
 
-void ModbusController::update_datetime( struct datetime_buffer_t dt) {
-  // Atualize os registradores Modbus com os valores da estrutura datetime_buffer_t
+void ModbusController::update_datetime( struct datetime_buffer_t dt) {  
+  // Atualize os registradores Modbus com os valores da estrutura dt_buffer_t
   this->mb.Ireg(INPUT_YEAR, dt.year);
   this->mb.Ireg(INPUT_MONTH, dt.month);
   this->mb.Ireg(INPUT_DAY, dt.day);

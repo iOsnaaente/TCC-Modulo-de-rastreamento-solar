@@ -28,12 +28,12 @@ enum RTC_type_t {
 
 // Datetime do sistema
 struct datetime_buffer_t {
-  uint16_t year;
-  uint16_t month;
-  uint16_t day;
-  uint16_t hour;
-  uint16_t minute;
-  uint16_t second;
+  int year;
+  int month;
+  int day;
+  int hour;
+  int minute;
+  double second;
   bool dt_sync;
 };
 
