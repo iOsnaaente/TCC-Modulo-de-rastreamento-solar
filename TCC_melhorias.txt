@@ -40,7 +40,6 @@
 
 	- Materiais e métodos, não desenvolver tanto como as coisas são colocadas 
 
-
     - Materiais e métodos (Revisar)
     - Justificar o uso do Modbus.
     - Arquitetura de rede
@@ -50,10 +49,3 @@
     - 
     - 
     - 		
-
-
-Outros assuntos:
-	- Comprovação de monitorias - 
-	- Comprovação de estágios 
-	- Ajuda coordenação para projeto Titan.
-

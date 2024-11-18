@@ -55,7 +55,7 @@ import time
 # MODBUS_IP = '192.168.137.223'   # Endereço IP do dispositivo Modbus
 # MODBUS_IP = '192.168.18.20'        # Endereço IP do dispositivo Modbus
 
-MODBUS_IP1 = '10.0.0.107'          # Endereço IP do dispositivo Modbus
+MODBUS_IP1 = '10.0.0.110'          # Endereço IP do dispositivo Modbus
 MODBUS_IP2 = '10.0.0.108'          # Endereço IP do dispositivo Modbus
 
 # MODBUS_IP = '192.168.0.35'        # Endereço IP do dispositivo Modbus
@@ -65,10 +65,10 @@ MODBUS_PORT = 502               # Porta Modbus TCP
 
 
 datetimes = {
-    "equ_out" : datetime.datetime( 2024,   3, 21, 0, 0, 0),
-    "sol_inv" : datetime.datetime( 2024,  6, 20, 0, 0, 0),
-    "equ_pri" : datetime.datetime( 2024,  9, 22, 0, 0, 0),
-    "sol_ver" : datetime.datetime( 2024, 12, 21, 0, 0, 0),
+    "equ_out" : datetime.datetime( 2024,  3, 21, 5, 0, 0),
+    "sol_inv" : datetime.datetime( 2024,  6, 20, 5, 0, 0),
+    "equ_pri" : datetime.datetime( 2024,  9, 22, 5, 0, 0),
+    "sol_ver" : datetime.datetime( 2024, 12, 21, 5, 0, 0),
 }
 
 CLIENTS_IPS = [ MODBUS_IP1 ] #, MODBUS_IP2 ]

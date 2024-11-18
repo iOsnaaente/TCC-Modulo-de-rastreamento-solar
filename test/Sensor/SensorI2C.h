@@ -10,16 +10,18 @@ AS5600 *sensor;
 double angle_counter = 0.0;
 double previous_angle = 0.0;
 
-
-void sensor_setup(){
-    serial_begin();
-    motor = new L298N( "Motor", BDC_FORWARD, 0.0  );
-    sensor = new AS5600( "Sensor", AS5600_MODE_I2C ); 
-}
-
 // Variáveis globais para controle de tempo e direção
 unsigned long last_direction_change = 0;
 int is_forward = 1; 
+
+
+void sensor_setup(){
+    // serial_begin();
+    motor = new L298N( "Motor", BDC_FORWARD, 0.0  );
+    sensor = new AS5600( "Sensor", AS5600_MODE_I2C ); 
+    angle_counter = 0.0;
+    previous_angle = 0.0;
+}
 
 
 void sensor_loop(){
@@ -53,11 +55,20 @@ void sensor_loop(){
     }
     motor->set_speed(BDC_MAX_POWER * 0.5);
     
-    DEBUG_SERIAL( "Pos", current_position );
-    DEBUG_SERIAL( "Raw", current_position_raw );
-    DEBUG_SERIAL( "Acum", angle_counter );
-    DEBUG_SERIAL( "Atuador", BDC_MAX_POWER*0.5*is_forward );
-    DEBUG_SERIAL( "dt", esp_timer_get_time()/1000.0 );
+    // DEBUG_SERIAL( "Pos", current_position );
+    // DEBUG_SERIAL( "Raw", current_position_raw );
+    // DEBUG_SERIAL( "Acum", angle_counter );
+    // DEBUG_SERIAL( "Atuador", BDC_MAX_POWER*0.5*is_forward );
+    // DEBUG_SERIAL( "dt", esp_timer_get_time()/1000.0 );
+    
+    printf( "Pos:%d,Raw:%f,Acum:%f,Atuador:%f,dt:%ld\n", current_position, current_position_raw, angle_counter, BDC_MAX_POWER*0.5*is_forward ,esp_timer_get_time()/1000.0 );
+    
+    vTaskDelay( 10 / portTICK_PERIOD_MS );
+}
 
-    vTaskDelay( 1 / portTICK_PERIOD_MS );
+void app_main() {
+    sensor_setup();
+    while (true){
+        sensor_loop(); 
+    }
 }

@@ -19,16 +19,26 @@
 /** Protótipo de funções */
 void blinkTask(void *pvParameters);
 
-
 DataloggerController *datalogger;
 MotorController  *controller;
 ModbusController *modbus; 
 Relay *relay;
 
+// Para testar o sensor I2C  
+// #include "../test/Sensor/SensorI2C.h"
+// Para testar o sensor I2C  
 
 void setup(){
     serial_begin();
     DEBUG_SERIAL("SERIAL", "SERIAL BEGAN" );
+
+    // // Para testar o sensor I2C  
+    // /** Inicializa o Relé de proteção */
+    // relay = new Relay( "Relay controller" );
+    // relay->turn_on();
+    // app_main();
+    // // Para testar o sensor I2C  
+
 
     /** Inicia o controle dos motores */
     controller = new MotorController( "MotorController", SENSOR_AS5600_I2C, MOTOR_DC ); 

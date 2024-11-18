@@ -42,7 +42,8 @@ esp_err_t SDCard::mount( void ) {
     slot_config.host_id = VSPI_HOST;
 
     // uint8_t ssPin, SPIClass &spi, uint32_t frequency, const char *mountpoint
-    if ( !SD.begin( BOARD_CS, this->default_path.c_str() ) ){
+    // if ( !SD.begin( BOARD_CS, this->default_path.c_str() ) ){
+    if ( !SD.begin( BOARD_CS  ) ){
         DEBUG_SERIAL( "SDCard::mount", "SDCard Mount falhou!" );
         this->is_initialized = false;
         return ESP_ERR_INVALID_STATE;

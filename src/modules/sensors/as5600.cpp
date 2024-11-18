@@ -22,7 +22,6 @@ AS5600::AS5600( const char* description, uint8_t mode )
     i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, I2C_RX_BUFFER, I2C_TX_BUFFER, 0);
     uint8_t data_config[8] = { 0 };
     write_register_data(AS5600_ADDR_ZPOS, sizeof(data_config), data_config);
-    
   } else if ( this->mode == AS5600_MODE_ANALOG ) { 
   } else if ( this->mode == AS5600_MODE_PWM ) { 
   } else {
