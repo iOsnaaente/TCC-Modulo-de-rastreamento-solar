@@ -18,7 +18,7 @@ These components' dependencies are listed in the [manifest file](main/idf_compon
 * A quadrature encoder of type AB to detect speed and direction of turns.
 
 ### Connection MCPWM + Encoder :
-      
+```
                               Battery power (8.4V - 24V)       
                                          |
       ESP 32                             v   L298N                   _
@@ -45,11 +45,13 @@ These components' dependencies are listed in the [manifest file](main/idf_compon
 |                   |             |                    |
 |                   |             |                    |
 +-------------------+             +--------------------+
+```
 
 ### MODBUS NETWORK 
 
 Modbus multi slave segment connection schematic:
 
+```
     MB_DEVICE_ADDR1
     -------------
     |           |
@@ -68,7 +70,7 @@ Modbus multi slave segment connection schematic:
     |  Slave 3  |---<>--+
     |           |
     -------------
-
+```
 
 
 ### Steps 
