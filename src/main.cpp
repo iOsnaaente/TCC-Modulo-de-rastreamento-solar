@@ -19,10 +19,10 @@
 /** Protótipo de funções */
 void blinkTask(void *pvParameters);
 
-DataloggerController *datalogger;
-MotorController  *controller;
-ModbusController *modbus; 
-Relay *relay;
+DataloggerController    *datalogger;
+MotorController         *controller;
+ModbusController        *modbus; 
+Relay                   *relay;
 
 // Para testar o sensor I2C  
 // #include "../test/Sensor/SensorI2C.h"

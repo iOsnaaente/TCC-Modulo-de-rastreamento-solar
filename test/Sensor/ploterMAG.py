@@ -9,10 +9,10 @@ FILENAME = os.path.join( os.path.dirname(__file__ ), 'dadosI2C.log' )
 # Função para ler o arquivo de log e extrair dados
 def read_log_data(filename):
     timestamps = []
+    actuator = []
+    acum = []
     pos = []
     raw = []
-    acum = []
-    actuator = []
     
     with open(filename, 'r') as file:
         timestamp = datetime.now()  # Inicializa o timestamp
@@ -46,7 +46,6 @@ raw         = raw[:min_length]
 acum        = acum[:min_length]
 actuator    = actuator[:min_length]  
 timestamps  = timestamps[:min_length]  
-
 
 # Calcular o tempo relativo a partir do primeiro timestamp
 start_time = timestamps[0]
