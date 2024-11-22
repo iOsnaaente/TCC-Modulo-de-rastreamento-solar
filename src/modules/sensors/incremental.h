@@ -2,7 +2,7 @@
 #define INCREMENTAL_SENSOR_H
 
 #include "../../interfaces/sensor.h"
-#include "../../controllers/includes/SerialController.h"
+#include "../../controllers/includes/serialController.h"
 
 #include "driver/gpio.h"
 #include "driver/timer.h"

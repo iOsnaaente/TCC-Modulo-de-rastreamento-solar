@@ -1,10 +1,12 @@
 #include "../src/controllers/includes/serialController.h"
 #include "../src/controllers/includes/motorController.h"
+#include "../src/modules/system/relay.h"
+
 #include <esp_timer.h>
 
 L298N *motor;
 AS5600 *sensor; 
-
+Relay *sensor_relay;
 
 // Contador de ângulo
 double angle_counter = 0.0;
@@ -16,11 +18,16 @@ int is_forward = 1;
 
 
 void sensor_setup(){
-    // serial_begin();
+    serial_begin();
     motor = new L298N( "Motor", BDC_FORWARD, 0.0  );
     sensor = new AS5600( "Sensor", AS5600_MODE_I2C ); 
+    sensor_relay = new Relay( "Relay" );
+
     angle_counter = 0.0;
     previous_angle = 0.0;
+
+    sensor_relay->turn_on();
+    printf( "Pos:%3.4f,Raw:%3.4f,Acum:%3.4f,Atuador:%3.4f,dt:%f\n", 0, 0, 0, 0 , esp_timer_get_time()/1000.0 );
 }
 
 
@@ -61,7 +68,7 @@ void sensor_loop(){
     // DEBUG_SERIAL( "Atuador", BDC_MAX_POWER*0.5*is_forward );
     // DEBUG_SERIAL( "dt", esp_timer_get_time()/1000.0 );
     
-    printf( "Pos:%d,Raw:%f,Acum:%f,Atuador:%f,dt:%ld\n", current_position, current_position_raw, angle_counter, BDC_MAX_POWER*0.5*is_forward ,esp_timer_get_time()/1000.0 );
+    printf( "Pos:%3.4f,Raw:%3.4f,Acum:%3.4f,Atuador:%3.4f,dt:%f\n", current_position, current_position_raw, angle_counter, BDC_MAX_POWER*0.5*is_forward ,esp_timer_get_time()/1000.0 );
     
     vTaskDelay( 10 / portTICK_PERIOD_MS );
 }

@@ -4,7 +4,8 @@ from scipy.interpolate import interp1d
 from datetime import datetime, timedelta
 import os 
 
-FILENAME = os.path.join( os.path.dirname(__file__ ), 'dadosI2C.log' ) 
+# FILENAME = os.path.join( os.path.dirname(__file__ ), 'dadosI2C.log' ) 
+FILENAME = os.path.join( os.path.dirname(__file__ ), 'log_putty.log' ) 
 
 # Função para ler o arquivo de log e extrair dados
 def read_log_data(filename):
@@ -17,23 +18,25 @@ def read_log_data(filename):
     with open(filename, 'r') as file:
         timestamp = datetime.now()  # Inicializa o timestamp
         for line in file:
-            if line.strip() == "":
-                continue
-            if '[Pos]:' in line:
-                p = float(line.split(':')[1].strip())
-                pos.append(p)
-            elif '[Raw]:' in line:
-                r = float(line.split(':')[1].strip())
-                raw.append(r)
-            elif '[Acum]:' in line:
-                ac = float(line.split(':')[1].strip())
-                acum.append(ac)
-            elif '[Atuador]:' in line:
-                at = float(line.split(':')[1].strip())
-                actuator.append(at)
-            elif '[dt]:' in line:
-                dt = float(line.split(':')[1].strip())
-                timestamps.append(dt)
+            values = line.split( "," ) 
+            for value in values:
+                if line.strip() == "":
+                    continue
+                if 'Pos:' in value:
+                    p = float(value.split(':')[1].strip())
+                    pos.append(p)
+                elif 'Raw:' in value:
+                    r = float(value.split(':')[1].strip())
+                    raw.append(r)
+                elif 'Acum:' in value:
+                    ac = float(value.split(':')[1].strip())
+                    acum.append(ac)
+                elif 'Atuador:' in value:
+                    at = float(value.split(':')[1].strip())
+                    actuator.append(at)
+                elif 'dt:' in value:
+                    dt = float(value.split(':')[1].strip())
+                    timestamps.append(dt)
     return timestamps, pos, raw, acum, actuator 
 
 # Ler os dados do arquivo de log
@@ -43,7 +46,12 @@ timestamps, pos, raw, acum, actuator = read_log_data( FILENAME )
 min_length  = min(len(pos), len(raw), len(acum), len(actuator), len(timestamps))//2
 pos         = pos[:min_length]
 raw         = raw[:min_length]
+
 acum        = acum[:min_length]
+acum_off = acum[0]
+acum_max = max(acum) - acum_off 
+acum = [ ((a-acum_off)/acum_max)*360 for a in acum ]
+
 actuator    = actuator[:min_length]  
 timestamps  = timestamps[:min_length]  
 
@@ -62,6 +70,7 @@ fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
 ax1.plot( relative_times, acum, label='Posição', color='green', linestyle='-')
 ax1.set_title('Posição')
 ax1.set_ylabel('Ângulo (º)')
+ax1.set_yticks( [0, 90, 180, 270, 360 ]  )
 ax1.legend()
 ax1.grid(True)
 
@@ -69,6 +78,7 @@ ax1.grid(True)
 ax2.plot( relative_times, pos, label='Sensor', color='blue', linestyle='-')
 ax2.set_title('Saída do sensor')
 ax2.set_ylabel('Ângulo (º)')
+ax2.set_yticks( [0, 90, 180, 270, 360 ]  )
 ax2.legend()
 ax2.grid(True)
 

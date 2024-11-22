@@ -25,10 +25,15 @@ ModbusController        *modbus;
 Relay                   *relay;
 
 // Para testar o sensor I2C  
-// #include "../test/Sensor/SensorI2C.h"
+#include "../test/Sensor/SensorI2C.h"
 // Para testar o sensor I2C  
 
 void setup(){
+
+
+    app_main();
+
+
     serial_begin();
     DEBUG_SERIAL("SERIAL", "SERIAL BEGAN" );
 
