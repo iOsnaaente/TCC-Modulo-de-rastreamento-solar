@@ -4,7 +4,7 @@ from scipy.interpolate import interp1d
 from datetime import datetime, timedelta
 import os 
 
-FILENAME = os.path.join( os.path.dirname(__file__ ), 'putty.log' ) 
+FILENAME = os.path.join( os.path.dirname(__file__ ), 'puttySenoide.log' ) 
 
 # Função para ler o arquivo de log e extrair dados
 def read_log_data(filename):
@@ -41,7 +41,12 @@ timestamps, setpoints, sensors, actuators = read_log_data( FILENAME )
 min_length = min(len(setpoints), len(sensors), len(actuators))
 setpoints  = setpoints[:min_length]
 sensors    = sensors[:min_length]
-actuators  = actuators[:min_length]
+
+max_set = max( setpoints )
+setpoints = [ (a/max_set)*360 for a in setpoints ]
+sensors = [ (a/max_set)*360 for a in sensors ] 
+
+actuators  =  actuators[:min_length]
 timestamps = timestamps[:min_length]  # Ajuste timestamps para a menor lista
 
 # Calcular o tempo relativo a partir do primeiro timestamp
@@ -58,6 +63,7 @@ fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 ax1.plot( relative_times, setpoints, label='Setpoint', color='green', linestyle='-')
 ax1.plot(relative_times, sensors, label='Sensor', color='blue', linestyle='-')
 ax1.set_title('Malha de controle')
+ax1.set_yticks( [-360, -270, -180, -90, 0, 90, 180, 270, 360] )
 ax1.set_ylabel('Ângulo (º)')
 ax1.legend()
 ax1.grid(True)
@@ -65,6 +71,7 @@ ax1.grid(True)
 # Plotar os dados de Atuador no segundo subplot
 ax2.plot( relative_times, actuators, label='Atuador', color='red', linestyle='-')
 ax2.set_title('Variável de atuação')
+ax2.set_xticks( [ i for i in range(0, 76, 5 ) ] )
 ax2.set_xlabel('Tempo (s)')
 ax2.set_ylabel('Duty Cycle (%)')
 ax2.legend()
