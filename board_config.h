@@ -33,7 +33,7 @@
 // #define PSD_MASTER   ((const char *)"robotica2024")
 #define SSID_MASTER  ((const char *)"Apt101")
 #define PSD_MASTER   ((const char *)"rocadapacoca")
-#define SERVER_IP    ((const char *)"192.168.0.12")
+#define SERVER_IP    ((const char *)"10.0.0.110")
 #define SERVER_PORT  502
 
 
@@ -88,9 +88,9 @@
 #define BOARD_SDA         ((gpio_num_t)GPIO_NUM_21)
 #define BOARD_SCL         ((gpio_num_t)GPIO_NUM_22)
 
-#define I2C_RX_BUFFER      0 
-#define I2C_TX_BUFFER      0 
-#define I2C_BUS_TIMEOUT_MS 100 
+#define I2C_RX_BUFFER      1024
+#define I2C_TX_BUFFER      1024 
+#define I2C_BUS_TIMEOUT_MS 50 
 
 /* GPIO para ponte H - L298N */
 #define IN1               ((gpio_num_t)GPIO_NUM_17)

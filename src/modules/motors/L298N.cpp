@@ -56,6 +56,9 @@ uint8_t L298N::set_speed( double speed ) {
 
   // Calcula a normalização linear
   uint32_t duty = (uint32_t)(((speed - BDC_MIN_POWER) / (BDC_MAX_POWER - BDC_MIN_POWER))*BDC_MAX_POWER);
+  
+  this->speed = duty*100/BDC_MAX_POWER; 
+  this->duty = duty;
 
   // Define um valor para o duty 
   ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, duty);

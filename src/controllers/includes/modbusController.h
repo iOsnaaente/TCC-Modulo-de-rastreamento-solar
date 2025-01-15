@@ -189,10 +189,11 @@ public:
   static ModbusController *Instance;
   TaskHandle_t *modbusDatetimeTaskHandler;
   TaskHandle_t *modbusScanTaskHandler;
+  TaskHandle_t *modbus_TaskHandler;
   SemaphoreHandle_t xModbusSemaphore;
 
   // Objetos 
-  ModbusIP mb;
+  ModbusIP *mb;
   RTC *rtc;
 
   // Periodo de atualização da rede modbus 

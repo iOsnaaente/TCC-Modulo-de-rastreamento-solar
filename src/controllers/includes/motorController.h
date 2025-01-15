@@ -73,7 +73,7 @@ public:
   double dif_error  = 0;
 
   /* Ganhos */
-  const uint8_t measurement_time = 5;
+  const uint8_t measurement_time = 25;
   uint64_t last_measurement = 0; 
   double Kp = 10.0;
   double Ki = 2.10;

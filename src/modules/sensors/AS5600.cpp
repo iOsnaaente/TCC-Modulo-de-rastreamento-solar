@@ -9,6 +9,7 @@
 
 AS5600::AS5600( const char* description, uint8_t mode ) 
   : Sensor( description ), mode( mode ) {
+    
   // Configurações básicas do I2C
   if ( this->mode == AS5600_MODE_I2C ){
     i2c_config_t i2c_channel_config = {};
@@ -17,11 +18,12 @@ AS5600::AS5600( const char* description, uint8_t mode )
     i2c_channel_config.scl_io_num = BOARD_SCL;
     i2c_channel_config.sda_pullup_en = GPIO_PULLUP_ENABLE;
     i2c_channel_config.scl_pullup_en = GPIO_PULLUP_ENABLE;
-    i2c_channel_config.master.clk_speed = 100000; // 100 kHz 
+    i2c_channel_config.master.clk_speed = 1000000; // 1000 kHz 
     i2c_param_config(I2C_NUM_0, &i2c_channel_config);
     i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, I2C_RX_BUFFER, I2C_TX_BUFFER, 0);
     uint8_t data_config[8] = { 0 };
     write_register_data(AS5600_ADDR_ZPOS, sizeof(data_config), data_config);
+
   } else if ( this->mode == AS5600_MODE_ANALOG ) { 
   } else if ( this->mode == AS5600_MODE_PWM ) { 
   } else {
