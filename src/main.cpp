@@ -17,7 +17,7 @@
 
 
 /** Protótipo de funções */
-void blinkTask(void *pvParameters);
+void blink_Task(void *pvParameters);
 
 DataloggerController    *datalogger;
 MotorController         *controller;
@@ -25,35 +25,34 @@ ModbusController        *modbus;
 Relay                   *relay;
 
 
+#include "../test/Controle/ControleDegrau.h"
+
 void setup(){
+
+    app_main();
+    while( true );
 
     /** Inicia a serial  */ 
     serial_begin();
 
-    /** Inicia o controle dos motores */
-    controller = new MotorController( "MotorController", SENSOR_AS5600_I2C, MOTOR_DC ); 
-    // controller->set_pid_gains( 10.25, 0.42, 4.78 );
-    controller->set_pid_gains( 15.25, 0.25, 5.78 );
-
     /** Inicia a comunicação WiFi para controle Modbus */ 
     DEBUG_SERIAL( "WIFI SSID", SSID_MASTER );
-    DEBUG_SERIAL( "WIFI PSD", PSD_MASTER );
     modbus = new ModbusController( "ModbusController", RTC_SOFT );
 
+    /** Inicia o controle dos motores */
+    controller = new MotorController( "MotorController", SENSOR_AS5600_I2C, MOTOR_DC );  // controller->set_pid_gains( 10.25, 0.42, 4.78 );
+    // controller->set_pid_gains( 15.25, 5.25, 10.78 );
+    controller->set_pid_gains( 10.0, 0.0, 0.0 );
 
-    DEBUG_SERIAL( "RELAY", "PRE RELAY" );
     /** Inicializa o Relé de proteção */
     relay = new Relay( "Relay controller" );
     relay->turn_on();
 
     /** Habilita o motor após ligar o relé */
-    controller->start();
-
-    /** Atualiza a posição do motor no registrador Modbus */
-    modbus->mb->Ireg( INPUT_SENSOR_POS, (uint16_t)controller->sensor->raw_position );
+    controller->stop();
 
     /** Inicia as tasks */
-    xTaskCreate( &blinkTask, "BlinkTask", 1024*1, NULL, 5, NULL );
+    xTaskCreate( &blink_Task, "BlinkTask", 1024*1, NULL, tskIDLE_PRIORITY, NULL );
 }
 
 
@@ -71,44 +70,87 @@ void loop() {
         modbus->mb->Coil( COIL_DT_SYNC, false );
     }
 
-    // Verifica se a data foi atualizada 
-    if ( modbus->mb->Ireg(INPUT_YEAR) == 0 ) {
-        // Desliga o motor
-        controller->stop();
-        DEBUG_SERIAL( "DATETIME", "Waiting datetime update" ); 
-
-    }else{
-        if ( ((int16_t) modbus->mb->Ireg(INPUT_ZENITH)) >= 0  ) { 
-            // Ligar o motor
-            controller->start();
-            
-            // Atualizar os dados do controlador de posição
-            controller->set_target( ((int16_t)(modbus->mb->Ireg(INPUT_SUN_TARGET)/10)) );
-            
-            DEBUG_SERIAL( "SUN POSITION"  , ((int16_t)(modbus->mb->Ireg(INPUT_SUN_TARGET)/10)) ); 
-            DEBUG_SERIAL( "MOTOR POSITION", controller->position ); 
-            DEBUG_SERIAL( "MOTOR SPEED %"  , controller->motor->speed ); 
-
-            // DEBUG_SERIAL( "SUN ZENITH",  String((int16_t)(modbus->mb->Ireg(INPUT_ZENITH) ))); 
-            // DEBUG_SERIAL( "SUN AZIMUTH", String((int16_t)(modbus->mb->Ireg(INPUT_AZIMUTH))) + "\n"); 
-
-        }else {
+    switch (modbus->mb->Hreg( HR_STATE ) ){
+    case HR_STATE_AUTO: // 0x00 
+        // Verifica se a data foi atualizada 
+        if ( modbus->mb->Ireg(INPUT_YEAR) == 0 ) {
             // Desliga o motor
             controller->stop();
-            DEBUG_SERIAL( "MOON SUN", "Goal Pos. = " + String((int16_t)(modbus->mb->Ireg(INPUT_SUN_TARGET))/100 ));
-            DEBUG_SERIAL( "MOON SUN", "Zenith = "    + String((int16_t)(modbus->mb->Ireg(INPUT_ZENITH))/100     ));
-            DEBUG_SERIAL( "MOON SUN", "Azimuth = "   + String((int16_t)(modbus->mb->Ireg(INPUT_AZIMUTH))/100    )+ "\n");
-        }        
+            DEBUG_SERIAL( "DATETIME", "Waiting datetime update" ); 
+        }else{
+
+            if ( ((int16_t) modbus->mb->Ireg(INPUT_ZENITH)) >= 0.0  ) { 
+                // Ligar o motor
+                controller->start();
+                // Atualizar os dados do controlador de posição
+                controller->set_target( modbus->mb->Ireg(INPUT_SUN_TARGET) );
+            
+            }else {
+                // Desliga o motor OU levar ele para casa 
+                controller->stop();
+            }        
+        }
+        break;
+
+    case HR_STATE_QUADRANT_1: // 0x01
+        controller->start();
+        controller->set_target( HR_QUADRANT_1_ANGLE );
+        modbus->mb->Ireg(INPUT_SUN_TARGET, HR_QUADRANT_1_ANGLE );
+        break;
+    case HR_STATE_QUADRANT_2: // 0x02
+        controller->start();
+        controller->set_target( HR_QUADRANT_2_ANGLE );
+        modbus->mb->Ireg(INPUT_SUN_TARGET, HR_QUADRANT_2_ANGLE );
+        break;
+    case HR_STATE_QUADRANT_3: // 0x03
+        controller->start();
+        controller->set_target( HR_QUADRANT_3_ANGLE );
+        modbus->mb->Ireg(INPUT_SUN_TARGET, HR_QUADRANT_3_ANGLE );
+        break;
+    case HR_STATE_QUADRANT_4: // 0x04
+        controller->start();
+        controller->set_target( HR_QUADRANT_4_ANGLE );
+        modbus->mb->Ireg(INPUT_SUN_TARGET, HR_QUADRANT_4_ANGLE );
+        break;
+    case HR_STATE_QUADRANT_12: // 0x12
+        controller->start();
+        controller->set_target( HR_QUADRANT_12_ANGLE );
+        modbus->mb->Ireg(INPUT_SUN_TARGET, HR_QUADRANT_12_ANGLE );
+        break;
+    case HR_STATE_QUADRANT_23: // 0x23
+        controller->start();
+        controller->set_target( HR_QUADRANT_23_ANGLE );
+        modbus->mb->Ireg(INPUT_SUN_TARGET, HR_QUADRANT_23_ANGLE );
+        break;
+    case HR_STATE_QUADRANT_34: // 0x34
+        controller->start();
+        controller->set_target( HR_QUADRANT_34_ANGLE );
+        modbus->mb->Ireg(INPUT_SUN_TARGET, HR_QUADRANT_34_ANGLE );
+        break;
+    case HR_STATE_QUADRANT_41: // 0x41
+        controller->start();
+        controller->set_target( HR_QUADRANT_41_ANGLE );
+        modbus->mb->Ireg(INPUT_SUN_TARGET, HR_QUADRANT_41_ANGLE );
+        break;
+
+    case HR_STATE_OFF: // 0xFF 
+    default:
+        controller->stop();
+        break;
     }
 
-    modbus->mb->Ireg( INPUT_SENSOR_POS, (uint16_t)controller->sensor->raw_position );
-
+    // Debug 
+    DEBUG_SERIAL( "GOAL POSITION"  , modbus->mb->Ireg(INPUT_SUN_TARGET) ); 
+    DEBUG_SERIAL( "SENSOR POSITION", controller->sensor->scaled_position ); 
+    DEBUG_SERIAL( "MOTOR POSITION" , controller->position ); 
+    DEBUG_SERIAL( "MOTOR SPEED %"  , controller->motor->speed ); 
+    modbus->mb->Ireg( INPUT_SENSOR_POS, (float)controller->sensor->scaled_position );
     vTaskDelay(1000 / portTICK_PERIOD_MS);
 }
 
 
 /** Task de Led blink */
-void blinkTask(void *pvParameters) {
+void blink_Task(void *pvParameters) {
     gpio_set_direction( LED_BOARD, (gpio_mode_t) GPIO_MODE_OUTPUT );
     bool state = false;
     while(true) {

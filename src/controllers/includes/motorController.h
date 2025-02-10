@@ -68,16 +68,28 @@ public:
   double position = 0;
 
   /* Erros */
-  double prev_error = 0;
-  double int_error  = 0;
-  double dif_error  = 0;
+  double prev_position_error = 0;
+  double int_position_error  = 0;
+  double dif_position_error  = 0;
+
+  /* Erros */
+  double prev_velocity_error = 0;
+  double int_velocity_error  = 0;
+  double dif_velocity_error  = 0;
 
   /* Ganhos */
   const uint8_t measurement_time = 25;
   uint64_t last_measurement = 0; 
-  double Kp = 10.0;
-  double Ki = 2.10;
-  double Kd = 0.10;
+  
+  // PID de posição 
+  double Kp_pos = 10.0;
+  double Ki_pos = 2.10;
+  double Kd_pos = 0.10;
+  
+  // PID de velocidade 
+  double Kp_vel = 10.0;
+  double Ki_vel = 10.0;
+  double Kd_vel = 10.0;
 
   void step( void * pvParameters );
   

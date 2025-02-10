@@ -174,6 +174,31 @@
  * */
 
 
+// Estados de funcionamento do sistema 
+#define HR_STATE_AUTO        0x00
+
+#define HR_STATE_QUADRANT_1   0x01
+#define HR_STATE_QUADRANT_2   0x02
+#define HR_STATE_QUADRANT_3   0x03
+#define HR_STATE_QUADRANT_4   0x04
+#define HR_STATE_QUADRANT_12  0x12
+#define HR_STATE_QUADRANT_23  0x23
+#define HR_STATE_QUADRANT_34  0x34
+#define HR_STATE_QUADRANT_41  0x41
+
+#define HR_STATE_OFF          0xFF 
+
+// Angulos de posição em quadrante do sistema em Graus 
+#define HR_QUADRANT_1_ANGLE   ((float)(0.000))
+#define HR_QUADRANT_2_ANGLE   ((float)(90.00))
+#define HR_QUADRANT_3_ANGLE   ((float)(180.0))
+#define HR_QUADRANT_4_ANGLE   ((float)(270.0))
+#define HR_QUADRANT_12_ANGLE  ((float)(45.00))
+#define HR_QUADRANT_23_ANGLE  ((float)(135.0))
+#define HR_QUADRANT_34_ANGLE  ((float)(225.0))
+#define HR_QUADRANT_41_ANGLE  ((float)(315.0))
+
+
 static void event_handler(void *event_handler_arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
 
 

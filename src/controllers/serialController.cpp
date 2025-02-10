@@ -13,8 +13,6 @@ SemaphoreHandle_t serialDebuggerMutex;
 
 
 void serial_begin() {
-  // Iniciar o Mutex serial 
-  serialDebuggerMutex = xSemaphoreCreateMutex();
   // Inicializa o Serial
   const uart_config_t uart_config = {
     .baud_rate = UART_BAUDRATE,
@@ -25,7 +23,10 @@ void serial_begin() {
   };
   uart_param_config(UART_NUM_0, &uart_config);
   uart_set_pin(UART_NUM_0, UART_TXD0, UART_RXD0, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-  uart_driver_install(UART_NUM_0, 256, 0, 0, NULL, 0);
+  uart_driver_install(UART_NUM_0, 1024, 1024, 0, NULL, 0 );
+  
+  // Iniciar o Mutex serial 
+  serialDebuggerMutex = xSemaphoreCreateMutex();
   DEBUG_SERIAL("UART COMM", "Iniciado a comunicação UART através de Serial0 [Pinos TXD0/RXD0].");
 }
 

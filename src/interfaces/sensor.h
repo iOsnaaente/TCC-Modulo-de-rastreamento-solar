@@ -35,10 +35,19 @@ enum SensorType_t {
 class Sensor {
 protected:
     const char* description;
+    double last_measurement;
 public:
-    /* Atributos da classe */
+    /* Posições */
     int32_t raw_position;
-    double scaled_position; 
+    double  scaled_position; 
+    int32_t last_raw_position;
+    double  last_scaled_position;
+    /* Velocidades */
+    double raw_velocity;
+    double scaled_velocity;
+    double last_raw_velocity;
+    double last_scaled_velocity; 
+
     /* Construtor da classe */
     Sensor( const char* description )
         : description(description) {};
@@ -47,6 +56,7 @@ public:
     virtual int32_t read_raw( void ) = 0;
     virtual double read_scaled( void ) = 0;
     virtual uint8_t get_status( void ) = 0;
+    virtual double read_velocity( void ) = 0;
 };
 
 

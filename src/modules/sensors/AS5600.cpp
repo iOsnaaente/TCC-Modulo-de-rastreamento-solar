@@ -93,14 +93,40 @@ esp_err_t AS5600::write_register_data(uint8_t register_addr, size_t data_len, co
 
 // read the unscaled angle and unmodified angle
 int32_t AS5600::read_raw(void) {
+  // Tempo da medição
+  // double measurement_time = esp_timer_get_time()/1000000.0;
+  double measurement_time = esp_timer_get_time();
+  
+  // Verifica o modo de operação 
   if (this->mode == AS5600_MODE_I2C ){
     uint8_t raw_angle_data[2];
     esp_err_t ret = this->read_register_data(AS5600_ADDR_RAW_ANGLE, sizeof(raw_angle_data), raw_angle_data);
+    
     if (ret == ESP_OK) {
+      // Calcula a posição absoluta em bits 
       this->raw_position = (raw_angle_data[0] << 8) | raw_angle_data[1];
+  
+      // Corrige o salto de ângulo se necessário (exemplo: -180 a 180 graus)
+      double delta_angle = this->raw_position - this->last_raw_position;
+      if ( delta_angle > AS5600_RESOLUTION/2 ) {          // Subtrai uma rotação completa se > 180º
+        this->raw_position -= AS5600_RESOLUTION;
+      } else if ( delta_angle < -AS5600_RESOLUTION/2 ) {  // Adiciona uma rotação completa < 180º
+        this->raw_position += AS5600_RESOLUTION;
+      }
+  
+      // Calcula a velocidade em bits/s 
+      this->raw_velocity = delta_angle / (measurement_time - this->last_measurement);
+  
+      // Atualiza os valores       
+      this->last_raw_position = this->raw_position;
+      this->last_raw_velocity = this->raw_velocity;
+      this->last_measurement = measurement_time;
+  
+      // Retorna o valor da posição 
       return this->raw_position;
     }
     return -1;
+  
   } else if ( this->mode == AS5600_MODE_ANALOG ){
     return -1;
   } else if ( this->mode == AS5600_MODE_PWM ){
@@ -112,7 +138,12 @@ int32_t AS5600::read_raw(void) {
 
 // Read the scaled angle
 double AS5600::read_scaled(void) {
-  this->scaled_position = (((double)read_raw() / AS5600_RESOLUTION) * 360.0);
+  this->read_raw();
+  // Posição em ° 
+  this->scaled_position = ( this->raw_position / AS5600_RESOLUTION ) * 360.0;
+  // Velocidade em °/s 
+  this->scaled_velocity = ( this->raw_velocity / AS5600_RESOLUTION ) * 360.0;
+  // Retorna a posição em °
   return this->scaled_position;
 }
 
@@ -135,4 +166,9 @@ uint8_t AS5600::get_status(void) {
   }else{
     return AS5600_ERROR_STATUS;
   }
+}
+
+double AS5600::read_velocity(void){
+  this->read_scaled();
+  return this->scaled_velocity;
 }

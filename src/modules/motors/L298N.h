@@ -29,6 +29,7 @@
 
 class L298N : public Motor {
 public:
+    bool invert; 
     /* Construtor */
     L298N(const char* description, uint8_t direction, double speed );
     L298N(const char* description);

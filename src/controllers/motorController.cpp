@@ -12,6 +12,8 @@
 // Inicializa o ponteiro estático
 MotorController* MotorController::Instance = nullptr;
 
+double torque_feedforward = 0.5;
+
 // Aplica um passo de cálculo das variáveis de controle 
 void MotorController::step( void *pvParametes ) {  
   while (true) {
@@ -23,7 +25,6 @@ void MotorController::step( void *pvParametes ) {
 
       // Calculo do ângulo acumulado
       double delta_angle = sensor->scaled_position - prev_angle;
-
       // Corrige o salto de ângulo se necessário (exemplo: -180 a 180 graus)
       if (delta_angle > 180) {
           delta_angle -= 360;
@@ -37,33 +38,52 @@ void MotorController::step( void *pvParametes ) {
       unsigned long current_time = esp_timer_get_time();
       double elapsed_time = (current_time - last_measurement) / 1000000.0; 
       
-      double error = setpoint - position;
-      int_error += error * elapsed_time;
-      double derivative = (error - prev_error) / elapsed_time;
+      // Calculo da malha de controle externa (Posição)
+      double position_error = setpoint - position;
+      int_position_error += position_error * elapsed_time;
+      double derivative = (position_error - prev_position_error) / elapsed_time;
       
       // Calcula o sinal de controle PID
-      double control_signal = Kp * error + Ki * int_error + Kd * derivative;
+      double velocity_setpoint =          \
+        ( Kp_pos * position_error     ) + \
+        ( Ki_pos * int_position_error ) + \
+        ( Kd_pos * derivative         );
 
-      // Atualiza o valor anterior do erro
-      prev_error = error;
-      last_measurement = current_time;
+      // Calculo da malha de controle interna (Velocidade)
+      double velocity_error = velocity_setpoint - sensor->scaled_velocity;
+      int_velocity_error += velocity_error * elapsed_time;
+      double velocity_derivative = (velocity_error - prev_velocity_error) / elapsed_time;
 
+      // Calcula o sinal de controle de saida para o motor 
+      double control_signal =             \
+        ( Kp_vel * velocity_error     ) + \
+        ( Ki_vel * int_velocity_error ) + \
+        ( Kd_vel * velocity_derivative );
+
+      // Adiciona o torque feedforward para suprir o atrito do motor 
+      control_signal += torque_feedforward;
+
+      // Limita o sinal de controle 
+      if ( control_signal > BDC_MAX_POWER ) {
+        control_signal = BDC_MAX_POWER;
+      } else if ( control_signal < -BDC_MAX_POWER ) {
+        control_signal = -BDC_MAX_POWER;
+      }
+
+      // Corrige orientação 
       if ( control_signal > 0 ){
-        if ( control_signal > BDC_MAX_POWER ) {
-          control_signal = BDC_MAX_POWER;
-        } else if ( control_signal < BDC_MIN_POWER ){
-          control_signal = BDC_MIN_POWER;
-        }
         motor->set_direction( BDC_FORWARD ); 
       } else {
-        if ( control_signal < -BDC_MAX_POWER ) {
-          control_signal = -BDC_MAX_POWER;
-        } else if ( control_signal > -BDC_MIN_POWER  ){ 
-          control_signal = -BDC_MIN_POWER;
-        }
         motor->set_direction( BDC_BACKWARD );  
+        control_signal = -control_signal;
       }
       motor->set_speed( fabs(control_signal) );
+
+
+      // Atualiza o valor anterior do erro
+      prev_position_error = position_error;
+      prev_velocity_error = velocity_error;
+      last_measurement = current_time;
 
       // Debug
       // DEBUG_SERIAL( "PID", "Current position: " + String(this->sensor->scaled_position) ); 
@@ -111,9 +131,6 @@ MotorController::MotorController(const char* description, SensorType_t sensor_ty
       // return ESP_ERR_NOT_FOUND;
     }
 
-    // Inicializa o semáforo
-    xMotorControllerSemaphore = xSemaphoreCreateBinary();
-    xSemaphoreGive(xMotorControllerSemaphore);
 
     // Cria a sua instancia para uso das funções da classe 
     Instance = this; 
@@ -124,9 +141,9 @@ MotorController::MotorController(const char* description, SensorType_t sensor_ty
 }
 
 esp_err_t MotorController::set_pid_gains( double Kp, double Ki, double Kd ){
-  this->Kp = Kp;
-  this->Ki = Ki;
-  this->Kd = Kd;
+  this->Kp_pos = Kp;
+  this->Ki_pos = Ki;
+  this->Kd_pos = Kd;
   return ESP_OK;
 }
 

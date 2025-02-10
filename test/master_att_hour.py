@@ -83,30 +83,33 @@ if __name__ == '__main__':
         try:
             # Verifica se o dispositivo Modbus está conectado
             if clients[0].connect():
-                # Ajuste do datetime atual 
-                year = now.year - 2000  
-                month = now.month
-                day = now.day
-                hour = now.hour
-                minute = now.minute
-                second = now.second
-                if last_hour > now.hour:
-                    break
-                last_hour = now.hour 
-                print(f"Enviando data e hora: {year}-{month}-{day} {hour}:{minute}:{second}")
+                
+                # # Ajuste do datetime atual 
+                # year = now.year - 2000  
+                # month = now.month
+                # day = now.day
+                # hour = now.hour
+                # minute = now.minute
+                # second = now.second
+                # if last_hour > now.hour:
+                #     break
+                # last_hour = now.hour 
+                # print(f"Enviando data e hora: {year}-{month}-{day} {hour}:{minute}:{second}")
 
-                # Escrever os valores nos registros Modbus
+                # # Escrever os valores nos registros Modbus
+                num = int(input("Digite o valor do estado: "))
                 for client in clients:
-                    client.write_registers( HR_YEAR, [ year, month, day, hour, minute, second ], slave = 18 ) 
-                    client.write_coil( COIL_DT_SYNC, True, slave = 18  ) 
+                    client.write_register( HR_STATE, num, slave = 18 ) 
+                #     client.write_registers( HR_YEAR, [ year, month, day, hour, minute, second ], slave = 18 ) 
+                #     client.write_coil( COIL_DT_SYNC, True, slave = 18  ) 
 
-                    # Ler os valores do registrador de leitura
-                    res = client.read_input_registers( INPUT_SENSOR_POS, count = 1 )
-                    if res.isError():
-                        print(f"Erro ao ler registrador Modbus: {res}")
-                    else:
-                        data = [ struct.unpack("h", struct.pack("H", i))[0] for i in res.registers]
-                        print(f"ID da Transação: {res.transaction_id}, Registros: {(data[0]*360)/(2**12)}")
+                #     # Ler os valores do registrador de leitura
+                #     res = client.read_input_registers( INPUT_SENSOR_POS, count = 1 )
+                #     if res.isError():
+                #         print(f"Erro ao ler registrador Modbus: {res}")
+                #     else:
+                #         data = [ struct.unpack("h", struct.pack("H", i))[0] for i in res.registers]
+                #         print(f"ID da Transação: {res.transaction_id}, Registros: {(data[0]*360)/(2**12)}")
 
             # Se o dispositivo estiver desconectado, apenas ignore ele 
             else:

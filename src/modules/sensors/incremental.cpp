@@ -94,7 +94,8 @@ int32_t IncrementalSensor::read_raw(){
 }
 
 double IncrementalSensor::read_scaled(){
-  return (double)(this->read_raw()*SCALE);
+  this->scaled_position = (double)(this->read_raw()*SCALE); 
+  return this->scaled_position;
 }
 
 uint8_t IncrementalSensor::get_status(){
