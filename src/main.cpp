@@ -25,12 +25,7 @@ ModbusController        *modbus;
 Relay                   *relay;
 
 
-#include "../test/Controle/ControleDegrau.h"
-
 void setup(){
-
-    app_main();
-    while( true );
 
     /** Inicia a serial  */ 
     serial_begin();

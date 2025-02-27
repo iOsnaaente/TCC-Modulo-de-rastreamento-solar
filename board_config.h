@@ -17,22 +17,22 @@
 #define LATITUDE    -29.16530765942215
 #define LONGITUDE   -54.89831672609559
 
-/** UNCOMMENT ONE OF THAT TO USE IN SYSTEM */
 
+/** UNCOMMENT ONE OF THAT TO USE IN SYSTEM */
 // #define AZIMUTE_MODE
 #define ZENITE_MODE
 
 
 /**
  * @brief Configurações do Wi-Fi
- * @details Defina as credenciais da sua rede WiFi
+ * @details É necessário se definir as credenciais da rede WiFi
+ * TODO: Implementar um WiFiManager para configurar a rede WiFi 
+ *       sem a necessidade de recompilar o código.
+ *       Ou então, implementar um armazenamento na memória não volátil
  */
-// #define SSID_MASTER  ((const char *)"Sampaio")
-// #define PSD_MASTER   ((const char *)"Elefante321")
-// #define SSID_MASTER  ((const char *)"TauraBots")
-// #define PSD_MASTER   ((const char *)"robotica2024")
-#define SSID_MASTER  ((const char *)"Apt101")
-#define PSD_MASTER   ((const char *)"rocadapacoca")
+#define SSID_MASTER  ((const char *)"Bruno-G-F-Sampaio")
+#define PSD_MASTER   ((const char *)"12345678")
+
 #define SERVER_IP    ((const char *)"10.0.0.110")
 #define SERVER_PORT  502
 
