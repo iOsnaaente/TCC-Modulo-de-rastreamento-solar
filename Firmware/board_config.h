@@ -10,6 +10,11 @@
 #ifndef BOARDs_CONFIG_H_
 #define BOARDs_CONFIG_H_
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+#include "freertos/semphr.h"
+#include "freertos/task.h"
+
 #include "driver/gpio.h"
 
 
@@ -17,24 +22,33 @@
 #define LATITUDE    -29.16530765942215
 #define LONGITUDE   -54.89831672609559
 
-/** UNCOMMENT ONE OF THAT TO USE IN SYSTEM */
+/* Velocidade de comunicação entre Debug */
+#define UART_BAUDRATE 115200     
 
+
+/** UNCOMMENT ONE OF THAT TO USE IN SYSTEM */
 // #define AZIMUTE_MODE
 #define ZENITE_MODE
 
 
+
 /**
  * @brief Configurações do Wi-Fi
- * @details Defina as credenciais da sua rede WiFi
+ * @details É necessário se definir as credenciais da rede WiFi
+ * TODO: Implementar um WiFiManager para configurar a rede WiFi 
+ *       sem a necessidade de recompilar o código.
+ *       Ou então, implementar um armazenamento na memória não volátil
  */
-// #define SSID_MASTER  ((const char *)"Sampaio")
-// #define PSD_MASTER   ((const char *)"Elefante321")
-// #define SSID_MASTER  ((const char *)"TauraBots")
-// #define PSD_MASTER   ((const char *)"robotica2024")
-#define SSID_MASTER  ((const char *)"Apt101")
-#define PSD_MASTER   ((const char *)"rocadapacoca")
-#define SERVER_IP    ((const char *)"192.168.0.12")
-#define SERVER_PORT  502
+#define SSID_MASTER         ((const char *)"Tracker-TCC")
+#define PSD_MASTER          ((const char *)"Bruno123456")
+
+#define SERVER_IP           ((const char *)"10.0.0.120")
+#define SERVER_PORT         502
+
+
+#define I2C_RX_BUFFER       1024
+#define I2C_TX_BUFFER       1024 
+#define I2C_BUS_TIMEOUT_MS  50 
 
 
 /** 
@@ -88,9 +102,6 @@
 #define BOARD_SDA         ((gpio_num_t)GPIO_NUM_21)
 #define BOARD_SCL         ((gpio_num_t)GPIO_NUM_22)
 
-#define I2C_RX_BUFFER      0 
-#define I2C_TX_BUFFER      0 
-#define I2C_BUS_TIMEOUT_MS 100 
 
 /* GPIO para ponte H - L298N */
 #define IN1               ((gpio_num_t)GPIO_NUM_17)
@@ -108,5 +119,8 @@
 #define UART_TXD0         ((gpio_num_t)GPIO_NUM_1)
 #define UART_RXD0         ((gpio_num_t)GPIO_NUM_3)
 
+
+/** Protótipo de funções auxiliares */
+void blink_Task(void *pvParameters);
 
 #endif

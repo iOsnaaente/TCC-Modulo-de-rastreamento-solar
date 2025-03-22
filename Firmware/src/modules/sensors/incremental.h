@@ -94,9 +94,9 @@ public:
     double read_scaled( void ) override;
     uint8_t get_status( void ) override;
     uint8_t get_direction( void );  
-
     esp_err_t set_measure_time( uint8_t value );
     esp_err_t set_scale( double value );
+    double read_velocity() override;
 };
 
 #endif // INCREMENTAL_SENSOR_H

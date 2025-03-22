@@ -42,6 +42,7 @@ L298N::L298N( const char* description = "L298N Driver", uint8_t direction = BDC_
     .duty = 0,                          /*!< LEDC channel duty, the range of duty setting is [0, (2**duty_resolution)] */
   };
   ledc_channel_config( &pwm_config );
+  this->invert = false;
 }
 
 
@@ -56,6 +57,9 @@ uint8_t L298N::set_speed( double speed ) {
 
   // Calcula a normalização linear
   uint32_t duty = (uint32_t)(((speed - BDC_MIN_POWER) / (BDC_MAX_POWER - BDC_MIN_POWER))*BDC_MAX_POWER);
+  
+  this->speed = duty*100/BDC_MAX_POWER; 
+  this->duty = duty;
 
   // Define um valor para o duty 
   ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, duty);
@@ -64,6 +68,7 @@ uint8_t L298N::set_speed( double speed ) {
 }
 
 uint8_t L298N::set_direction( uint8_t direction ) {
+  if ( this->invert ) direction = !direction;
   if ( direction == BDC_FORWARD ){
     this->set_torque( BDC_ENABLE );
     gpio_set_level(IN1, true);

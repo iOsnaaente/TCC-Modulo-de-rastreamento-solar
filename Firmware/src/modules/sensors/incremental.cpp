@@ -94,7 +94,8 @@ int32_t IncrementalSensor::read_raw(){
 }
 
 double IncrementalSensor::read_scaled(){
-  return (double)(this->read_raw()*SCALE);
+  this->scaled_position = (double)(this->read_raw()*SCALE); 
+  return this->scaled_position;
 }
 
 uint8_t IncrementalSensor::get_status(){
@@ -110,4 +111,8 @@ esp_err_t IncrementalSensor::set_measure_time( uint8_t value ){
 esp_err_t IncrementalSensor::set_scale( double value ){
   SCALE = value;
   return ESP_OK;
+}
+
+double IncrementalSensor::read_velocity(void){
+  return 0.0;
 }
