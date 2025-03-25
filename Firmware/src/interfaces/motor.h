@@ -45,6 +45,7 @@ public:
     const char* description;
     bool direction;
     double speed;
+    double duty;
     /* Construtor da classe */
     Motor( const char* description, uint8_t direction, double speed )
         : description(description), direction(direction), speed(speed) {}

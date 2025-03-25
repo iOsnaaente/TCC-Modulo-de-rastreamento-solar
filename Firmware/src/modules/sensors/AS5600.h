@@ -164,6 +164,10 @@ class AS5600 : public Sensor {
     * to operate properly, the MD have to be set and the MH and ML have to be 0
     */
     uint8_t get_status(void) override;
+
+    // Read the velocity of the magnet
+    double read_velocity(void) override;
+
 };
 
 #endif

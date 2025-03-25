@@ -174,6 +174,54 @@
  * */
 
 
+// Estados de funcionamento do sistema 
+#define HR_STATE_AUTO          0
+
+#define HR_STATE_QUADRANT_1   01
+#define HR_STATE_QUADRANT_2   02
+#define HR_STATE_QUADRANT_3   03
+#define HR_STATE_QUADRANT_4   04
+#define HR_STATE_QUADRANT_12  12
+#define HR_STATE_QUADRANT_23  23
+#define HR_STATE_QUADRANT_34  34
+#define HR_STATE_QUADRANT_41  41
+
+#define HR_STATE_GO_HOME      253
+#define HR_STATE_WAITING      254
+#define HR_STATE_OFF          255 
+
+
+#ifdef ZENITE_MODE 
+  // Angulos de posição em quadrante do sistema em Graus 
+  #define HR_QUADRANT_1_ANGLE   ((float)(270.000))
+  #define HR_QUADRANT_2_ANGLE   ((float)(180.00))
+  #define HR_QUADRANT_3_ANGLE   ((float)(90.0))
+  #define HR_QUADRANT_4_ANGLE   ((float)(0.0))
+
+  #define HR_QUADRANT_41_ANGLE  ((float)(45.00))
+  #define HR_QUADRANT_34_ANGLE  ((float)(135.0))
+  #define HR_QUADRANT_23_ANGLE  ((float)(225.0))
+  #define HR_QUADRANT_12_ANGLE  ((float)(315.0))
+  #define POS_HOME_MIN 90.0
+  #define POS_HOME_MAX 91.0
+#endif 
+
+#ifdef AZIMUTE_MODE
+  // Angulos de posição em quadrante do sistema em Graus 
+  #define HR_QUADRANT_1_ANGLE   ((float)(0.000))
+  #define HR_QUADRANT_2_ANGLE   ((float)(90.00))
+  #define HR_QUADRANT_3_ANGLE   ((float)(180.0))
+  #define HR_QUADRANT_4_ANGLE   ((float)(270.0))
+  #define HR_QUADRANT_12_ANGLE  ((float)(45.00))
+  #define HR_QUADRANT_23_ANGLE  ((float)(135.0))
+  #define HR_QUADRANT_34_ANGLE  ((float)(225.0))
+  #define HR_QUADRANT_41_ANGLE  ((float)(315.0))
+  #define POS_HOME_MIN 100.0
+  #define POS_HOME_MAX 101.0
+#endif 
+
+
+
 static void event_handler(void *event_handler_arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
 
 
@@ -189,10 +237,11 @@ public:
   static ModbusController *Instance;
   TaskHandle_t *modbusDatetimeTaskHandler;
   TaskHandle_t *modbusScanTaskHandler;
+  TaskHandle_t *modbus_TaskHandler;
   SemaphoreHandle_t xModbusSemaphore;
 
   // Objetos 
-  ModbusIP mb;
+  ModbusIP *mb;
   RTC *rtc;
 
   // Periodo de atualização da rede modbus 

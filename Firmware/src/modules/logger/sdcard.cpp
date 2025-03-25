@@ -18,13 +18,12 @@ esp_err_t SDCard::mount( void ) {
         DEBUG_SERIAL( "SDCard::mount", "SDCard already mounted!" );
         return ESP_ERR_INVALID_STATE;
     }
-
     // Inicia o barramento SPI
     spi_bus_config_t spi_config;
     memset(&spi_config, 0, sizeof(spi_bus_config_t));
-    spi_config.mosi_io_num = BOARD_MOSI;
-    spi_config.miso_io_num = BOARD_MISO;
-    spi_config.sclk_io_num = BOARD_SCK;
+    spi_config.mosi_io_num = BOARD_MOSI; // GPIO 23 
+    spi_config.miso_io_num = BOARD_MISO; // GPIO 19 
+    spi_config.sclk_io_num = BOARD_SCK;  // GPIO 18
     spi_config.quadwp_io_num = -1;
     spi_config.quadhd_io_num = -1;
     spi_config.max_transfer_sz = 4000000U;
@@ -82,7 +81,7 @@ esp_err_t SDCard::write(const std::string path, const uint8_t* data, size_t leng
     size_t written = file.write(data, length);
     file.close();
     if (written == length) {
-        DEBUG_SERIAL("SDCard::write", "Escrito no arquivo: " + path.c_str());
+        // DEBUG_SERIAL("SDCard::write", String(path) );
         return ESP_OK;
     } else {
         DEBUG_SERIAL("SDCard::write", "A escrita falhou!");
@@ -104,7 +103,7 @@ esp_err_t SDCard::read(const std::string path, uint8_t* buffer, size_t length) {
     size_t read_length = file.read(buffer, length);
     file.close();
     if (read_length == length) {
-        DEBUG_SERIAL("SDCard::read", "File read: " + path.c_str() );
+        // DEBUG_SERIAL("SDCard::read", String(path) );
         return ESP_OK;
     } else {
         DEBUG_SERIAL("SDCard::read", "Read failed");

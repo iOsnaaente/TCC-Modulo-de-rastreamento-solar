@@ -20,7 +20,7 @@
               
 /* Constantes para definir valores mínimos e máximo de potência */
 #define BDC_TURN_OFF      ((double)(0))          //
-#define BDC_MIN_POWER     ((double)(2000))       //
+#define BDC_MIN_POWER     ((double)(4000))       //
 #define BDC_MAX_POWER     ((double)(8192))       //
 
 #define BDC_ERROR   ((uint8_t)(0)) 
@@ -29,6 +29,7 @@
 
 class L298N : public Motor {
 public:
+    bool invert; 
     /* Construtor */
     L298N(const char* description, uint8_t direction, double speed );
     L298N(const char* description);

@@ -11,6 +11,7 @@ public:
     int32_t read_raw() override;
     double read_scaled() override;
     uint8_t get_status() override;
+    double read_velocity() override;
 };
 
 #endif // ANALOG_SENSOR_H
